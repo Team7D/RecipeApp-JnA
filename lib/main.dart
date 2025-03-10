@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
-
+import 'package:firebase_core/firebase_core.dart';
+import 'Backend/Services/Firebase/firebase_options.dart';
 import 'Frontend/Pages/home_page.dart';
 import 'Frontend/Pages/login_page.dart';
 import 'Frontend/Pages/search_page.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(MyApp());
 }
 
