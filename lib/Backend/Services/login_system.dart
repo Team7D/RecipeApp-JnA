@@ -1,5 +1,7 @@
 ﻿import 'package:firebase_auth/firebase_auth.dart';
 
+import '../Core/Recipes/recipeTesting.dart';
+
 ///Displays a popup to the user allowing them to sign in with google.
 Future<void> loginWithGoogle() async {
   final FirebaseAuth auth = FirebaseAuth.instance;
@@ -8,6 +10,10 @@ Future<void> loginWithGoogle() async {
     final GoogleAuthProvider googleProvider = GoogleAuthProvider();
 
     await auth.signInWithPopup(googleProvider);
+
+    RecipeTesting rt = RecipeTesting();
+    rt.createRecipe();
+    rt.upload();
 
   } catch (error) {
     print("Error logging in");
