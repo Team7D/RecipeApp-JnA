@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../Backend/Services/login_system.dart';
 import 'home_page.dart';
 
 class LoginPage extends StatelessWidget {
@@ -13,7 +14,7 @@ class LoginPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(
+              const Text(
                 "Welcome Back!",
                 textAlign: TextAlign.center,
                 style: TextStyle(
@@ -33,7 +34,9 @@ class LoginPage extends StatelessWidget {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                   padding: EdgeInsets.symmetric(vertical: 12),
                 ),
-                onPressed: () {
+                onPressed: () async {
+                  //Login
+                  await loginWithGoogle();
                   // Navigate to HomePage on login
                   Navigator.pushReplacement(
                     context,
@@ -41,19 +44,6 @@ class LoginPage extends StatelessWidget {
                   );
                 },
                 child: Text("Login", style: TextStyle(color: Colors.white, fontSize: 18)),
-              ),
-              SizedBox(height: 10),
-              TextButton(
-                onPressed: () {
-                  // TODO: Implement Reset Password
-                },
-                child: Text("Forgot Password?", style: TextStyle(color: Color(0xFF6B4226))),
-              ),
-              TextButton(
-                onPressed: () {
-                  // TODO: Implement Register User
-                },
-                child: Text("Create an Account", style: TextStyle(color: Color(0xFF6B4226))),
               ),
             ],
           ),
