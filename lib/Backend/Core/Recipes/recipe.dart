@@ -1,4 +1,5 @@
 ﻿import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 
 import 'rating.dart';
 import 'time.dart';
@@ -10,7 +11,7 @@ import 'instruction.dart';
 class Recipe {
   final String _id;
   final String _title;
-  final ImageInfo _image;
+  final RecipeImageInfo _image;
   final List<Ingredient> _ingredients;
   final List<Instruction> _instructions;
   final Time _duration;
@@ -48,6 +49,32 @@ class Recipe {
       }
     }
     return false;
+  }
+  bool MatchesFilter(Filter filter) {
+    if (filter.title != "" && !_title.contains(filter.title.toString())) {
+      print("Doesn't match title");
+      return false; // If the title doesn't match
+    }
+    if (filter.difficulty != null && _difficulty.getLevel() != filter.difficulty!.getLevel()) {
+      print("Doesn't match difficulty");
+      return false; // If the difficulty doesn't match
+    }
+    if (filter.duration != null &&
+        int.parse(_duration.getTotalTime()) >
+        int.parse(filter.duration!.getTotalTime())) {
+      print("Doesn't match duration");
+      return false; // If the duration doesn't match
+    }
+    if (filter.rating != null &&
+        _rating.getAverageRating() < filter.rating!.getAverageRating()) {
+      print("Doesn't match rating");
+      return false; // If the rating is less than
+    }
+
+    //TODO: Ingredient check
+
+    print("Matches");
+    return true; // Otherwise return true as we meet all criteria
   }
 }
 
@@ -120,7 +147,7 @@ Future<Recipe?> retrieveRecipe(String recipeId) async {
       return Recipe(
         recipeDoc.id,
         data['title'],
-        ImageInfo(data['imageUrl'], ''),
+        RecipeImageInfo(data['imageUrl'], ''),
         ingredients,
         instructions,
         Time(
@@ -177,7 +204,7 @@ Future<List<Recipe>> retrieveAllRecipes() async {
       return Recipe(
         recipeDoc.id,
         data['title'],
-        ImageInfo(data['imageUrl'], ''),
+        RecipeImageInfo(data['imageUrl'], ''),
         ingredients,
         instructions,
         Time(
@@ -234,6 +261,34 @@ Future<List<Recipe>> getAllRecipesWithIngredientFilter(List<Ingredient> ingredie
   }
 
   return filteredRecipes;
+}
+
+Future<List<Recipe>> getAllRecipesWithFilter(Filter filter) async {
+  List<Recipe> allRecipes = await retrieveAllRecipes();
+  List<Recipe> filteredRecipes = [];
+
+  for (Recipe r in allRecipes) {
+    if(r.MatchesFilter(filter)) {
+      filteredRecipes.add(r);
+    }
+  }
+
+
+  for(Recipe r in filteredRecipes){
+    print(r.getTitle());
+  }
+
+  return filteredRecipes;
+}
+
+class Filter{
+  late String? title;
+  late List<Ingredient> ingredients;
+  late Time? duration;
+  late Rating? rating;
+  late Difficulty? difficulty;
+
+  Filter({required this.title, required this.ingredients, required this.duration, required this.rating, required this.difficulty});
 }
 
 

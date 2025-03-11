@@ -10,4 +10,12 @@
   int getQuantity() => _quantity;
 
   String getUnit() => _unit;
+
+  bool matches(Ingredient other){
+    if(_name == other._name){
+      return true;
+    }
+
+    return false;
+  }
 }
