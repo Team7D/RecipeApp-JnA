@@ -41,6 +41,14 @@ class Recipe {
         return "Hard";
     }
   }
+  bool hasIngredient(Ingredient ingredient){
+    for(Ingredient i in _ingredients){
+      if(i.getName() == ingredient.getName()){
+        return true;
+      }
+    }
+    return false;
+  }
 }
 
 /// Function to upload a recipe to Firestore, user must be signed in for this to work.
@@ -134,6 +142,64 @@ Future<Recipe?> retrieveRecipe(String recipeId) async {
     return null; // Return null in case of any errors
   }
 }
+
+/// Function to retrieve ALL recipes from the Firestore, this will become bad if there is a lot of recipes.
+Future<List<Recipe>> retrieveAllRecipes() async {
+  try {
+    // Get a reference to the 'recipes' collection
+    CollectionReference recipesRef = FirebaseFirestore.instance.collection('recipes');
+
+    // Get all recipe documents in the 'recipes' collection
+    QuerySnapshot querySnapshot = await recipesRef.get();
+
+    // Map each document to a Recipe object
+    List<Recipe> recipes = querySnapshot.docs.map((recipeDoc) {
+      Map<String, dynamic> data = recipeDoc.data() as Map<String, dynamic>;
+
+      // Convert the ingredients from Firestore data to a list of Ingredient objects
+      List<Ingredient> ingredients = (data['ingredients'] as List).map((ingredientData) {
+        return Ingredient(
+          ingredientData['name'],
+          ingredientData['quantity'],
+          ingredientData['unit'],
+        );
+      }).toList();
+
+      // Convert the instructions from Firestore data to a list of Instruction objects
+      List<Instruction> instructions = (data['instructions'] as List).map((instructionData) {
+        return Instruction(
+          instructionData['stepNumber'],
+          instructionData['instruction'],
+        );
+      }).toList();
+
+      // Create and return the Recipe object using getter methods
+      return Recipe(
+        recipeDoc.id,
+        data['title'],
+        ImageInfo(data['imageUrl'], ''),
+        ingredients,
+        instructions,
+        Time(
+          data['preparationTime'],
+          data['cookingTime'],
+        ),
+        Rating(
+          data['rating']['averageRating'],
+          data['rating']['reviewCount'],
+        ),
+        Difficulty(level: data['difficulty']),
+      );
+    }).toList();
+
+    // Return the list of all recipes
+    return recipes;
+  } catch (e) {
+    print('Error retrieving recipes: $e');
+    return []; // Return an empty list in case of any errors
+  }
+}
+
 
 
   // // Creating some example ingredients

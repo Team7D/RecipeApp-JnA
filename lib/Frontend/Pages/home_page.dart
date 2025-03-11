@@ -8,9 +8,9 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<Map<String, dynamic>> recipes = [
-    {"title": "Pasta", "image": "", "isBookmarked": false},
-    {"title": "Pizza", "image": "", "isBookmarked": false},
-    {"title": "Salad", "image": "", "isBookmarked": false},
+    {"title": "Pasta", "image": "https://i.imgur.com/VcQJIrF.jpeg", "isBookmarked": false},
+    {"title": "Pizza", "image": "https://i.imgur.com/VcQJIrF.jpeg", "isBookmarked": false},
+    {"title": "Salad", "image": "https://i.imgur.com/VcQJIrF.jpeg", "isBookmarked": false},
   ];
 
   int _selectedIndex = 0;
@@ -62,7 +62,7 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(15),
-                    child: Image.asset(
+                    child: Image.network(
                       recipes[index]["image"],
                       width: double.infinity,
                       height: 180,

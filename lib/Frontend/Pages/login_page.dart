@@ -24,10 +24,6 @@ class LoginPage extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 20),
-              _buildTextField("Email"),
-              SizedBox(height: 15),
-              _buildTextField("Password", obscureText: true),
-              SizedBox(height: 20),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color(0xFFFFA559), // Pastel orange
