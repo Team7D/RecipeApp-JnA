@@ -200,6 +200,42 @@ Future<List<Recipe>> retrieveAllRecipes() async {
   }
 }
 
+Future<List<Recipe>> getAllRecipesWithTitleFilter(String filter) async{
+  List<Recipe> allRecipes = await retrieveAllRecipes();
+  List<Recipe> filteredRecipes = [];
+
+  for(Recipe r in allRecipes){
+    if(r.getTitle().contains(filter)){
+      filteredRecipes.add(r);
+    }
+  }
+
+  for(Recipe r in filteredRecipes){
+    print(r.getTitle());
+  }
+
+  return filteredRecipes;
+}
+
+Future<List<Recipe>> getAllRecipesWithIngredientFilter(List<Ingredient> ingredients) async {
+  List<Recipe> allRecipes = await retrieveAllRecipes();
+  List<Recipe> filteredRecipes = [];
+
+  for (Recipe r in allRecipes) {
+    // Check if all required ingredients are present in the recipe
+    if (ingredients.every((i) => r.hasIngredient(i))) {
+      filteredRecipes.add(r);
+    }
+  }
+
+
+  for(Recipe r in filteredRecipes){
+    print(r.getTitle());
+  }
+
+  return filteredRecipes;
+}
+
 
 
   // // Creating some example ingredients

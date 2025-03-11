@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../Backend/Core/Recipes/recipe.dart';
+
 class SearchPage extends StatefulWidget {
   @override
   _SearchPageState createState() => _SearchPageState();
@@ -7,14 +9,40 @@ class SearchPage extends StatefulWidget {
 
 class _SearchPageState extends State<SearchPage> {
   final TextEditingController _searchController = TextEditingController();
-  List<String> searchResults = ["Spaghetti Bolognese", "Chicken Curry", "Vegetable Stir Fry"];
+  List<Recipe> allRecipes = [];
+  List<String> searchResults = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadRecipes();
+  }
+
+  Future<void> _loadRecipes() async {
+    print('Page opened: Loading recipes...');
+    allRecipes = await retrieveAllRecipes();
+    for(Recipe r in allRecipes){
+      searchResults.add(r.getTitle());
+    }
+    setState(() {});
+  }
+
+  void _updateSearchResults(String filter) async {
+    allRecipes = await getAllRecipesWithTitleFilter(filter);
+    searchResults.clear();
+    for(Recipe r in allRecipes){
+      searchResults.add(r.getTitle());
+    }
+
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xFFFFF6E5),
       appBar: AppBar(
-        title: Text("Search Recipes", style: TextStyle(color: Color(0xFF6B4226))),
+        title: const Text("Search Recipes", style: TextStyle(color: Color(0xFF6B4226))),
         backgroundColor: Color(0xFFFFA559),
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white),
@@ -55,6 +83,11 @@ class _SearchPageState extends State<SearchPage> {
   Widget _buildSearchBar() {
     return TextField(
       controller: _searchController,
+      onChanged: (text){
+        setState(() {
+          _updateSearchResults(text);
+        });
+      },
       decoration: InputDecoration(
         hintText: "Search for a recipe...",
         prefixIcon: Icon(Icons.search, color: Color(0xFFFFA559)),

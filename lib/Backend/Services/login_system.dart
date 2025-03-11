@@ -1,6 +1,6 @@
 ﻿import 'package:firebase_auth/firebase_auth.dart';
 import 'package:recipe_app/Backend/Core/Recipes/ingredient.dart';
-
+import '../Core/Recipes/recipe.dart';
 import '../Core/Recipes/recipeTesting.dart';
 
 ///Displays a popup to the user allowing them to sign in with google.
@@ -14,7 +14,6 @@ Future<void> loginWithGoogle() async {
 
     //TODO : Ignore this section just for testing stuff...
     RecipeTesting rt = RecipeTesting();
-    rt.getAllRecipesWithIngredientFilter([Ingredient("Spaghetti", 5, "g"), Ingredient("Beans", 5, "g")]);
 
   } catch (error) {
     print("Error logging in");
