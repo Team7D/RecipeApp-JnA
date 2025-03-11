@@ -11,7 +11,7 @@ class RecipeTesting{
   List<Recipe> currentRecipes = [];
 
   Future<void> getAllRecipes() async{
-    Filter filter = Filter(title: "", ingredients: [], duration: null, rating: null, difficulty: Difficulty(level: "Easy"));
+    Filter filter = Filter(title: "", ingredients: [Ingredient("Bacon", 5, "g")], duration: null, rating: null, difficulty: Difficulty(level: "Easy"));
 
     List<Recipe> recipes = await getAllRecipesWithFilter(filter);
 

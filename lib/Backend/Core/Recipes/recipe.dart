@@ -1,6 +1,4 @@
 ﻿import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
-
 import 'rating.dart';
 import 'time.dart';
 import 'difficulty.dart';
@@ -72,6 +70,11 @@ class Recipe {
     }
 
     //TODO: Ingredient check
+    for(Ingredient i in filter.ingredients){
+      if(!hasIngredient(i)){
+        return false; // If there is an ingredient mismatch
+      }
+    }
 
     print("Matches");
     return true; // Otherwise return true as we meet all criteria
