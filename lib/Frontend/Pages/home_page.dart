@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'search_page.dart';
+import 'shopping_list.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -38,6 +39,15 @@ class _HomePageState extends State<HomePage> {
         title: Text("Home", style: TextStyle(color: Color(0xFF6B4226))),
         backgroundColor: Color(0xFFFFA559), // Pastel orange
         actions: [
+          IconButton(
+            icon: Icon(Icons.shopping_cart, color: Colors.white),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ShoppingListPage()),
+              );
+            },
+          ),
           IconButton(
             icon: Icon(Icons.search, color: Colors.white),
             onPressed: () {
