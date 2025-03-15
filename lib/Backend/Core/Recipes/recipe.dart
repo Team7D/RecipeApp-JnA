@@ -15,8 +15,9 @@ class Recipe {
   final Time _duration;
   final Rating _rating;
   final Difficulty _difficulty;
+  bool isBookmarked;
 
-  Recipe(this._id, this._title, this._image, this._ingredients, this._instructions, this._duration, this._rating, this._difficulty);
+  Recipe(this._id, this._title, this._image, this._ingredients, this._instructions, this._duration, this._rating, this._difficulty, {this.isBookmarked = false,});
 
   String getID() => _id;
   String getTitle() => _title;
