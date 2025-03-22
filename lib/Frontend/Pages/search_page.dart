@@ -55,7 +55,7 @@ class _SearchPageState extends State<SearchPage> {
   @override
   void initState() {
     super.initState();
-    _performSearch(); // Perform initial search to display all recipes by default
+    _performSearch();
   }
 
   @override
