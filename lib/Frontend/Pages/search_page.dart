@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../Backend/Core/Recipes/recipe.dart';
+import '../../Backend/Core/Recipes/ingredient.dart';
+import '../../Backend/Core/Recipes/time.dart';
+import '../../Backend/Core/Recipes/rating.dart';
+import '../../Backend/Core/Recipes/difficulty.dart';
 import 'recipe_page.dart';
 
 class SearchPage extends StatefulWidget {
@@ -8,46 +12,50 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
-  TextEditingController _searchController = TextEditingController();
-  TextEditingController _ingredientController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
+  final TextEditingController _ingredientController = TextEditingController();
   List<Recipe> _searchResults = [];
   String _selectedFilter = 'Difficulty';
   String _selectedFilterValue = '';
-  String _ingredientQuery = '';
+  List<String> _selectedIngredients = [];
 
   final Map<String, List<String>> filterOptions = {
     'Difficulty': ['Easy', 'Medium', 'Hard'],
     'Rating': ['1', '2', '3', '4', '5'],
     'Total Time': ['< 30 min', '30-60 min', '> 60 min'],
+    'Ingredients': []
   };
 
   void _performSearch() async {
-    String query = _searchController.text.trim();
-    List<Recipe> results = await getAllRecipesWithTitleFilter(query);
+    Filter filter = Filter(
+      title: _searchController.text.trim().isNotEmpty ? _searchController.text.trim() : null,
+      ingredients: _selectedIngredients.isNotEmpty ? _selectedIngredients.map((name) => Ingredient(name, 1, '')).toList() : [],
+      duration: _selectedFilter == 'Total Time' ? _parseTime(_selectedFilterValue) : null,
+      rating: _selectedFilter == 'Rating' ? Rating(double.tryParse(_selectedFilterValue) ?? 0, 0) : null,
+      difficulty: _selectedFilter == 'Difficulty' ? Difficulty(level: _selectedFilterValue) : null,
+    );
 
-    if (_selectedFilter == 'Difficulty' && _selectedFilterValue.isNotEmpty) {
-      results = results.where((recipe) => recipe.getDifficulty() == _selectedFilterValue).toList();
-    } else if (_selectedFilter == 'Rating' && _selectedFilterValue.isNotEmpty) {
-      double rating = double.tryParse(_selectedFilterValue) ?? 0;
-      results = results.where((recipe) => recipe.getAverageRating() >= rating).toList();
-    } else if (_selectedFilter == 'Total Time' && _selectedFilterValue.isNotEmpty) {
-      results = results.where((recipe) {
-        int totalTime = int.tryParse(recipe.getTotalTime().replaceAll(RegExp(r'[^0-9]'), '')) ?? 0;
-        if (_selectedFilterValue == '< 30 min') return totalTime < 30;
-        if (_selectedFilterValue == '30-60 min') return totalTime >= 30 && totalTime <= 60;
-        if (_selectedFilterValue == '> 60 min') return totalTime > 60;
-        return true;
-      }).toList();
-    } else if (_selectedFilter == 'Ingredients' && _ingredientQuery.isNotEmpty) {
-      results = results.where((recipe) {
-        return recipe.getIngredients().any((ingredient) =>
-            ingredient.getName().toLowerCase().contains(_ingredientQuery.toLowerCase()));
-      }).toList();
+    List<Recipe> results = await getAllRecipesWithFilter(filter);
+    setState(() => _searchResults = results);
+  }
+
+  Time? _parseTime(String timeFilter) {
+    switch (timeFilter) {
+      case '< 30 min':
+        return Time("0", "30");
+      case '30-60 min':
+        return Time("30", "60");
+      case '> 60 min':
+        return Time("60", "120");
+      default:
+        return null;
     }
+  }
 
-    setState(() {
-      _searchResults = results;
-    });
+  @override
+  void initState() {
+    super.initState();
+    _performSearch(); // Perform initial search to display all recipes by default
   }
 
   @override
@@ -66,70 +74,72 @@ class _SearchPageState extends State<SearchPage> {
               controller: _searchController,
               decoration: InputDecoration(
                 labelText: 'Search for a recipe',
-                suffixIcon: IconButton(
-                  icon: Icon(Icons.search),
-                  onPressed: _performSearch,
-                ),
+                suffixIcon: IconButton(icon: Icon(Icons.search), onPressed: _performSearch),
               ),
-              onSubmitted: (value) => _performSearch(),
+              onChanged: (_) => _performSearch(),
             ),
             SizedBox(height: 10),
             DropdownButton<String>(
               value: _selectedFilter,
-              onChanged: (newValue) {
-                setState(() {
-                  _selectedFilter = newValue!;
-                  _selectedFilterValue = '';
-                  _ingredientQuery = '';
-                });
-              },
-              items: ['Difficulty', 'Ingredients', 'Rating', 'Total Time']
-                  .map<DropdownMenuItem<String>>((String filter) {
-                return DropdownMenuItem<String>(
-                  value: filter,
-                  child: Text(filter),
-                );
-              }).toList(),
+              onChanged: (newValue) => setState(() {
+                _selectedFilter = newValue!;
+                _selectedFilterValue = '';
+                _selectedIngredients.clear();
+                _performSearch();
+              }),
+              items: filterOptions.keys.map((filter) => DropdownMenuItem(value: filter, child: Text(filter))).toList(),
             ),
             SizedBox(height: 10),
-            if (_selectedFilter == 'Ingredients')
+            if (_selectedFilter == 'Ingredients') ...[
               TextField(
                 controller: _ingredientController,
                 decoration: InputDecoration(
                   labelText: 'Enter ingredient',
                   suffixIcon: IconButton(
-                    icon: Icon(Icons.search),
+                    icon: Icon(Icons.add),
                     onPressed: () {
-                      setState(() {
-                        _ingredientQuery = _ingredientController.text.trim();
-                      });
-                      _performSearch();
+                      if (_ingredientController.text.trim().isNotEmpty) {
+                        setState(() {
+                          _selectedIngredients.add(_ingredientController.text.trim());
+                          _ingredientController.clear();
+                          _performSearch();
+                        });
+                      }
                     },
                   ),
                 ),
-                onSubmitted: (value) {
-                  setState(() {
-                    _ingredientQuery = value.trim();
-                  });
-                  _performSearch();
+                onSubmitted: (_) {
+                  if (_ingredientController.text.trim().isNotEmpty) {
+                    setState(() {
+                      _selectedIngredients.add(_ingredientController.text.trim());
+                      _ingredientController.clear();
+                      _performSearch();
+                    });
+                  }
                 },
-              )
-            else
+              ),
+              Wrap(
+                children: _selectedIngredients.map((ingredient) => Chip(
+                  label: Text(ingredient),
+                  onDeleted: () {
+                    setState(() {
+                      _selectedIngredients.remove(ingredient);
+                      _performSearch();
+                    });
+                  },
+                )).toList(),
+              ),
+            ] else
               DropdownButton<String>(
                 value: _selectedFilterValue.isEmpty ? null : _selectedFilterValue,
                 hint: Text('Select $_selectedFilter'),
                 onChanged: (newValue) {
                   setState(() {
                     _selectedFilterValue = newValue!;
+                    _performSearch();
                   });
-                  _performSearch();
                 },
-                items: (filterOptions[_selectedFilter] ?? []).map<DropdownMenuItem<String>>((String option) {
-                  return DropdownMenuItem<String>(
-                    value: option,
-                    child: Text(option),
-                  );
-                }).toList(),
+                items: (filterOptions[_selectedFilter] ?? []).map((option) => DropdownMenuItem(value: option, child: Text(option))).toList(),
               ),
             SizedBox(height: 10),
             Expanded(
@@ -150,7 +160,7 @@ class _SearchPageState extends State<SearchPage> {
                           width: 50,
                           height: 50,
                           fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) => Icon(Icons.image),
+                          errorBuilder: (_, __, ___) => Icon(Icons.image),
                         ),
                       ),
                       title: Text(recipe.getTitle(), style: TextStyle(fontWeight: FontWeight.bold)),
@@ -173,6 +183,13 @@ class _SearchPageState extends State<SearchPage> {
     );
   }
 }
+
+
+
+
+
+
+
 
 
 
