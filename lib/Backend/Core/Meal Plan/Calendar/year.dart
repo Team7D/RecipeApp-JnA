@@ -7,7 +7,7 @@ class Year {
   late int firstDayOfYear;
 
   Year(this.year) {
-    firstDayOfYear = calculateFirstDayOfYear(year);
+    firstDayOfYear = _calculateFirstDayOfYear(year);
     for (int monthNumber = 1; monthNumber <= 12; monthNumber++) {
       months.add(Month(monthNumber, firstDayOfYear, isLeapYear: _isLeapYear(year)));
       firstDayOfYear = (firstDayOfYear + months[monthNumber - 1].daysInMonth) % 7;
@@ -31,5 +31,23 @@ class Year {
 
   void displayDayInMonthInYear(int month, int day) {
     months[month - 1].displayDay(day);
+  }
+
+  int _calculateFirstDayOfYear(int year) {
+    int day = 1;
+    int month = 1;
+
+    // Zeller's Congruence algorithm
+    if (month == 1 || month == 2) {
+      month += 12;
+      year -= 1;
+    }
+
+    int k = year % 100; // The year within the century
+    int j = year ~/ 100; // The century
+
+    int f = (day + (13 * (month + 1)) ~/ 5 + k + k ~/ 4 + j ~/ 4 - 2 * j) % 7;
+
+    return f;
   }
 }

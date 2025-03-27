@@ -36,7 +36,7 @@ class _HomePageState extends State<HomePage> {
 
     calendar.thisYear()?.display();
 
-    Recipe? brekky = today?.mealPlan.getRecipeAtSlot(MealSlot.Breakfast);
+    Recipe? brekky = today?.mealPlan.getRecipeAtSlot(slot: MealSlot.Breakfast);
     brekky?.display();
   }
 

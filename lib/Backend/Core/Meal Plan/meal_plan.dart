@@ -13,11 +13,13 @@ class MealPlan{
     print("Dinner: " + (_mealPlan[MealSlot.Dinner] != null ? _mealPlan[MealSlot.Dinner]!.getTitle() : "Nothing"));
   }
 
+  ///Use this to set the slot's recipe (E.g Breakfast (MealSlot.Breakfast) -> Pancakes (Should be a recipe object))
   void setSlotRecipe(MealSlot slot, Recipe recipe){
     _mealPlan[slot] = recipe;
   }
 
-  Recipe? getRecipeAtSlot(MealSlot slot){
+  ///Use this to retrieve the recipe at a given meal slot
+  Recipe? getRecipeAtSlot({required MealSlot slot}){
     return _mealPlan[slot];
   }
 }
