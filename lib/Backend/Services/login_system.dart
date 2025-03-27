@@ -1,7 +1,7 @@
 ﻿import 'package:firebase_auth/firebase_auth.dart';
-import 'package:recipe_app/Backend/Core/Recipes/ingredient.dart';
-import '../Core/Recipes/recipe.dart';
-import '../Core/Recipes/recipeTesting.dart';
+import 'package:recipe_app/Backend/Core/Recipe/ingredient.dart';
+import '../Core/Recipe/recipe.dart';
+import '../Core/Recipe/recipeTesting.dart';
 
 ///Displays a popup to the user allowing them to sign in with google.
 Future<void> loginWithGoogle() async {

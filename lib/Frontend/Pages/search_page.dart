@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import '../../Backend/Core/Recipes/recipe.dart';
-import '../../Backend/Core/Recipes/ingredient.dart';
-import '../../Backend/Core/Recipes/time.dart';
-import '../../Backend/Core/Recipes/rating.dart';
-import '../../Backend/Core/Recipes/difficulty.dart';
+import '../../Backend/Core/Recipe/recipe.dart';
+import '../../Backend/Core/Recipe/ingredient.dart';
+import '../../Backend/Core/Recipe/time.dart';
+import '../../Backend/Core/Recipe/rating.dart';
+import '../../Backend/Core/Recipe/difficulty.dart';
 import 'recipe_page.dart';
 
 class SearchPage extends StatefulWidget {

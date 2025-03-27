@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:recipe_app/Backend/Core/Meal%20Plan/meal_plan.dart';
+import 'package:recipe_app/Backend/Core/Recipe/difficulty.dart';
+import 'package:recipe_app/Backend/Core/Recipe/image_info.dart';
+import 'package:recipe_app/Backend/Core/Recipe/rating.dart';
 import 'dart:math';
+import '../../Backend/Core/Meal Plan/Calendar/calendar.dart';
+import '../../Backend/Core/Meal Plan/Calendar/day.dart';
+import '../../Backend/Core/Recipe/time.dart';
 import 'search_page.dart';
 import 'shopping_list.dart';
-import '../../Backend/Core/Recipes/recipe.dart';
+import '../../Backend/Core/Recipe/recipe.dart';
 import 'recipe_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -17,6 +24,16 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     fetchRandomRecipes();
+
+    //TESTING
+    createMealPlan();
+  }
+
+  void createMealPlan(){
+    Calendar calendar = Calendar();
+    Day? today = calendar.today();
+    today?.mealPlan.setSlotRecipe(MealSlot.Breakfast, Recipe("3", "Pancakes", RecipeImageInfo("", ""), [], [], Time("2", "2"), Rating(2,2), Difficulty(level: 'Easy')));
+    today?.display();
   }
 
   Future<void> fetchRandomRecipes() async {
