@@ -12,19 +12,18 @@ class Day {
   void display() {
     print("${getDayOfWeek(dayOfWeek)} $dayNumber${getOrdinalSuffix(dayNumber)}");
     mealPlan.display();
+    print("");
   }
 
 
   String getOrdinalSuffix(int day) {
-    // Handle the special cases for 11, 12, 13
+    // Special cases for 11, 12, 13
     if (day >= 10 && day <= 20) {
       return 'th';
     }
 
-    // Get the last digit of the day number
     int lastDigit = day % 10;
 
-    // Apply the correct suffix based on the last digit
     switch (lastDigit) {
       case 1:
         return 'st';
@@ -43,7 +42,7 @@ enum MonthOfYear {
   July, August, September, October, November, December
 }
 
-// Helper function to get the number of days in a month (considering leap years for February)
+// Helper function to get the number of days in a month
 int getDaysInMonth(int monthNumber, bool isLeapYear) {
   switch (monthNumber) {
     case 1: // January
@@ -67,9 +66,8 @@ int getDaysInMonth(int monthNumber, bool isLeapYear) {
 }
 
 int calculateFirstDayOfYear(int year) {
-  // January 1st of the given year
-  int day = 1; // Day (1st)
-  int month = 1; // January
+  int day = 1;
+  int month = 1;
 
   // Zeller's Congruence algorithm
   if (month == 1 || month == 2) {
@@ -85,7 +83,7 @@ int calculateFirstDayOfYear(int year) {
   return f;
 }
 
-// Convert day number to a human-readable day of the week
+// Convert day number to a day of the week
 String getDayOfWeek(int dayCode) {
   switch (dayCode) {
     case 0: return "Saturday";

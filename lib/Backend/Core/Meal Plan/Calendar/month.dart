@@ -23,10 +23,11 @@ class Month {
   }
 
   void display() {
-    print(monthName);
+    print(monthName.toUpperCase());
     for (var day in days) {
       day.display();
     }
+    print("");
   }
 
   void displayDay(int dayNumber) {

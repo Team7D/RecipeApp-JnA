@@ -22,6 +22,18 @@ class Calendar {
     return getDayInMonthInYear(today.year, today.month, today.day);
   }
 
+  Month? thisMonth(){
+    DateTime today = DateTime.now();
+
+    return getMonthInYear(today.year, today.month);
+  }
+
+  Year? thisYear(){
+    DateTime today = DateTime.now();
+
+    return getYear(today.year);
+  }
+
   void addYear(int yearNumber) {
     _years.add(Year(yearNumber));
   }

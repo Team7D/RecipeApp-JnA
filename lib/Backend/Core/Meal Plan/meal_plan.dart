@@ -16,6 +16,10 @@ class MealPlan{
   void setSlotRecipe(MealSlot slot, Recipe recipe){
     _mealPlan[slot] = recipe;
   }
+
+  Recipe? getRecipeAtSlot(MealSlot slot){
+    return _mealPlan[slot];
+  }
 }
 
 enum MealSlot{Breakfast, Lunch, Dinner}

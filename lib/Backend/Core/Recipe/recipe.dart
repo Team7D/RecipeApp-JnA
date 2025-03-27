@@ -41,6 +41,10 @@ class Recipe {
         return "Hard";
     }
   }
+  void display(){
+    print("ID: " + _id);
+    print(_title);
+  }
   bool hasIngredient(Ingredient ingredient){
     for(Ingredient i in _ingredients){
       if(i.getName() == ingredient.getName()){

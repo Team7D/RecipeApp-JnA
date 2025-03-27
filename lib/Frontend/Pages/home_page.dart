@@ -33,7 +33,11 @@ class _HomePageState extends State<HomePage> {
     Calendar calendar = Calendar();
     Day? today = calendar.today();
     today?.mealPlan.setSlotRecipe(MealSlot.Breakfast, Recipe("3", "Pancakes", RecipeImageInfo("", ""), [], [], Time("2", "2"), Rating(2,2), Difficulty(level: 'Easy')));
-    today?.display();
+
+    calendar.thisYear()?.display();
+
+    Recipe? brekky = today?.mealPlan.getRecipeAtSlot(MealSlot.Breakfast);
+    brekky?.display();
   }
 
   Future<void> fetchRandomRecipes() async {
