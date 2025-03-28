@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
+import '../../Backend/Core/Recipes/ingredient.dart';
 import 'search_page.dart';
 import 'shopping_list.dart';
 import '../../Backend/Core/Recipes/recipe.dart';

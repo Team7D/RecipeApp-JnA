@@ -16,11 +16,11 @@ class _SearchPageState extends State<SearchPage> {
   final TextEditingController _ingredientController = TextEditingController();
   List<Recipe> _searchResults = [];
   String _selectedFilter = 'Difficulty';
-  String _selectedFilterValue = '';
+  String _selectedFilterValue = "Any";
   List<String> _selectedIngredients = [];
 
   final Map<String, List<String>> filterOptions = {
-    'Difficulty': ['Easy', 'Medium', 'Hard'],
+    'Difficulty': ['Any', 'Easy', 'Medium', 'Hard'],
     'Rating': ['1', '2', '3', '4', '5'],
     'Total Time': ['< 30 min', '30-60 min', '> 60 min'],
     'Ingredients': []
@@ -29,14 +29,18 @@ class _SearchPageState extends State<SearchPage> {
   void _performSearch() async {
     Filter filter = Filter(
       title: _searchController.text.trim().isNotEmpty ? _searchController.text.trim() : null,
-      ingredients: _selectedIngredients.isNotEmpty ? _selectedIngredients.map((name) => Ingredient(name, 1, '')).toList() : [],
+      ingredients: _selectedIngredients.isNotEmpty ? _selectedIngredients.map((name) => Ingredient(name, 1, "g")).toList() : [],
       duration: _selectedFilter == 'Total Time' ? _parseTime(_selectedFilterValue) : null,
       rating: _selectedFilter == 'Rating' ? Rating(double.tryParse(_selectedFilterValue) ?? 0, 0) : null,
       difficulty: _selectedFilter == 'Difficulty' ? Difficulty(level: _selectedFilterValue) : null,
     );
 
-    List<Recipe> results = await getAllRecipesWithFilter(filter);
-    setState(() => _searchResults = results);
+    if(filter.isEmpty()){
+      _searchResults = await retrieveAllRecipes();
+    } else {
+      _searchResults = await getAllRecipesWithFilter(filter);
+    }
+    setState(() {});
   }
 
   Time? _parseTime(String timeFilter) {
