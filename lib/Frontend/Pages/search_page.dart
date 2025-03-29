@@ -14,32 +14,29 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends State<SearchPage> {
   final TextEditingController _searchController = TextEditingController();
   final TextEditingController _ingredientController = TextEditingController();
-  List<Recipe> _searchResults = [];
-  String _selectedFilter = 'Difficulty';
-  String _selectedFilterValue = "Any";
-  List<String> _selectedIngredients = [];
 
-  final Map<String, List<String>> filterOptions = {
-    'Difficulty': ['Any', 'Easy', 'Medium', 'Hard'],
-    'Rating': ['1', '2', '3', '4', '5'],
-    'Total Time': ['< 30 min', '30-60 min', '> 60 min'],
-    'Ingredients': []
-  };
+  List<Recipe> _searchResults = [];
+  List<String> _selectedIngredients = [];
+  String _selectedDifficulty = "Any";
+  String _selectedRating = "Any";
+  String _selectedTime = "Any";
+
+  final List<String> difficultyOptions = ['Any', 'Easy', 'Medium', 'Hard'];
+  final List<String> ratingOptions = ['Any', '1', '2', '3', '4', '5'];
+  final List<String> timeOptions = ['Any', '< 30 min', '30-60 min', '> 60 min'];
 
   void _performSearch() async {
     Filter filter = Filter(
       title: _searchController.text.trim().isNotEmpty ? _searchController.text.trim() : null,
-      ingredients: _selectedIngredients.isNotEmpty ? _selectedIngredients.map((name) => Ingredient(name, 1, "g")).toList() : [],
-      duration: _selectedFilter == 'Total Time' ? _parseTime(_selectedFilterValue) : null,
-      rating: _selectedFilter == 'Rating' ? Rating(double.tryParse(_selectedFilterValue) ?? 0, 0) : null,
-      difficulty: _selectedFilter == 'Difficulty' ? Difficulty(level: _selectedFilterValue) : null,
+      ingredients: _selectedIngredients.isNotEmpty
+          ? _selectedIngredients.map((name) => Ingredient(name, 1, "g")).toList()
+          : [],
+      duration: _selectedTime != "Any" ? _parseTime(_selectedTime) : null,
+      rating: _selectedRating != "Any" ? Rating(double.tryParse(_selectedRating) ?? 0, 0) : null,
+      difficulty: _selectedDifficulty != "Any" ? Difficulty(level: _selectedDifficulty) : null,
     );
 
-    if(filter.isEmpty()){
-      _searchResults = await retrieveAllRecipes();
-    } else {
-      _searchResults = await getAllRecipesWithFilter(filter);
-    }
+    _searchResults = filter.isEmpty() ? await retrieveAllRecipes() : await getAllRecipesWithFilter(filter);
     setState(() {});
   }
 
@@ -62,6 +59,101 @@ class _SearchPageState extends State<SearchPage> {
     _performSearch();
   }
 
+  void _showFilterPopup() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setModalState) {
+            return Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Wrap(
+                children: [
+                  Text("Filters", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  Divider(),
+
+                  // Difficulty Filter
+                  Text("Difficulty"),
+                  DropdownButton<String>(
+                    value: _selectedDifficulty,
+                    onChanged: (newValue) {
+                      setModalState(() {
+                        _selectedDifficulty = newValue!;
+                      });
+                      _performSearch();
+                    },
+                    items: difficultyOptions.map((option) => DropdownMenuItem(value: option, child: Text(option))).toList(),
+                  ),
+
+                  // Rating Filter
+                  Text("Rating"),
+                  DropdownButton<String>(
+                    value: _selectedRating,
+                    onChanged: (newValue) {
+                      setModalState(() {
+                        _selectedRating = newValue!;
+                      });
+                      _performSearch();
+                    },
+                    items: ratingOptions.map((option) => DropdownMenuItem(value: option, child: Text(option))).toList(),
+                  ),
+
+                  // Time Filter
+                  Text("Total Time"),
+                  DropdownButton<String>(
+                    value: _selectedTime,
+                    onChanged: (newValue) {
+                      setModalState(() {
+                        _selectedTime = newValue!;
+                      });
+                      _performSearch();
+                    },
+                    items: timeOptions.map((option) => DropdownMenuItem(value: option, child: Text(option))).toList(),
+                  ),
+
+                  // Ingredients Filter
+                  Text("Ingredients"),
+                  TextField(
+                    controller: _ingredientController,
+                    decoration: InputDecoration(
+                      hintText: 'Enter ingredient',
+                      suffixIcon: IconButton(
+                        icon: Icon(Icons.add),
+                        onPressed: () {
+                          if (_ingredientController.text.trim().isNotEmpty) {
+                            setModalState(() {
+                              _selectedIngredients.add(_ingredientController.text.trim());
+                              _ingredientController.clear();
+                            });
+                            _performSearch();
+                          }
+                        },
+                      ),
+                    ),
+                  ),
+
+                  // Show selected ingredients as chips
+                  Wrap(
+                    children: _selectedIngredients.map((ingredient) => Chip(
+                      label: Text(ingredient),
+                      onDeleted: () {
+                        setModalState(() {
+                          _selectedIngredients.remove(ingredient);
+                        });
+                        _performSearch();
+                      },
+                    )).toList(),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -74,6 +166,7 @@ class _SearchPageState extends State<SearchPage> {
         padding: const EdgeInsets.all(10.0),
         child: Column(
           children: [
+            // Search Bar
             TextField(
               controller: _searchController,
               decoration: InputDecoration(
@@ -83,69 +176,18 @@ class _SearchPageState extends State<SearchPage> {
               onChanged: (_) => _performSearch(),
             ),
             SizedBox(height: 10),
-            DropdownButton<String>(
-              value: _selectedFilter,
-              onChanged: (newValue) => setState(() {
-                _selectedFilter = newValue!;
-                _selectedFilterValue = '';
-                _selectedIngredients.clear();
-                _performSearch();
-              }),
-              items: filterOptions.keys.map((filter) => DropdownMenuItem(value: filter, child: Text(filter))).toList(),
+
+            // Open Filter Button
+            ElevatedButton.icon(
+              onPressed: _showFilterPopup,
+              icon: Icon(Icons.filter_list),
+              label: Text("Filters"),
+              style: ElevatedButton.styleFrom(backgroundColor: Color(0xFFFFA559)),
             ),
+
             SizedBox(height: 10),
-            if (_selectedFilter == 'Ingredients') ...[
-              TextField(
-                controller: _ingredientController,
-                decoration: InputDecoration(
-                  labelText: 'Enter ingredient',
-                  suffixIcon: IconButton(
-                    icon: Icon(Icons.add),
-                    onPressed: () {
-                      if (_ingredientController.text.trim().isNotEmpty) {
-                        setState(() {
-                          _selectedIngredients.add(_ingredientController.text.trim());
-                          _ingredientController.clear();
-                          _performSearch();
-                        });
-                      }
-                    },
-                  ),
-                ),
-                onSubmitted: (_) {
-                  if (_ingredientController.text.trim().isNotEmpty) {
-                    setState(() {
-                      _selectedIngredients.add(_ingredientController.text.trim());
-                      _ingredientController.clear();
-                      _performSearch();
-                    });
-                  }
-                },
-              ),
-              Wrap(
-                children: _selectedIngredients.map((ingredient) => Chip(
-                  label: Text(ingredient),
-                  onDeleted: () {
-                    setState(() {
-                      _selectedIngredients.remove(ingredient);
-                      _performSearch();
-                    });
-                  },
-                )).toList(),
-              ),
-            ] else
-              DropdownButton<String>(
-                value: _selectedFilterValue.isEmpty ? null : _selectedFilterValue,
-                hint: Text('Select $_selectedFilter'),
-                onChanged: (newValue) {
-                  setState(() {
-                    _selectedFilterValue = newValue!;
-                    _performSearch();
-                  });
-                },
-                items: (filterOptions[_selectedFilter] ?? []).map((option) => DropdownMenuItem(value: option, child: Text(option))).toList(),
-              ),
-            SizedBox(height: 10),
+
+            // Recipe List
             Expanded(
               child: ListView.builder(
                 itemCount: _searchResults.length,
@@ -187,6 +229,9 @@ class _SearchPageState extends State<SearchPage> {
     );
   }
 }
+
+
+
 
 
 
