@@ -1,5 +1,10 @@
 ﻿import 'package:flutter/material.dart';
 
+import '../../Backend/Core/Meal Plan/Calendar/calendar.dart';
+import '../../Backend/Core/Meal Plan/meal_plan.dart';
+import '../../Backend/Core/Recipe/ingredient.dart';
+import '../../Backend/Core/Recipe/recipe.dart';
+
 class ShoppingListPage extends StatefulWidget {
   @override
   _ShoppingListPageState createState() => _ShoppingListPageState();
@@ -9,13 +14,35 @@ class _ShoppingListPageState extends State<ShoppingListPage> {
   List<String> shoppingList = [];
   final TextEditingController _controller = TextEditingController();
 
-  void _addItem() {
+  Future<void> _addItem() async {
+    //This is testing the import ingredients from mealplan - should be moved to an 'import' button
+    await test();
+
     if (_controller.text.isNotEmpty) {
       setState(() {
         shoppingList.add(_controller.text);
         _controller.clear();
       });
     }
+  }
+
+  Future<void> test() async {
+    Calendar c = Calendar();
+
+    List<Recipe> recipes = await retrieveAllRecipes();
+
+    c.today()?.mealPlan.setSlotRecipe(MealSlot.Dinner, recipes[0]);
+
+    List<Ingredient>? ingredients = c.thisYear()?.getYearMealPlanIngredients();
+
+    if(ingredients == null) return;
+
+    for(Ingredient i in ingredients){
+      shoppingList.add(i.toString());
+      print(i);
+    }
+
+    setState(() {});
   }
 
   void _removeItem(int index) {

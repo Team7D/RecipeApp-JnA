@@ -1,4 +1,5 @@
-﻿import '../Recipe/recipe.dart';
+﻿import 'package:recipe_app/Backend/Core/Recipe/ingredient.dart';
+import '../Recipe/recipe.dart';
 
 class MealPlan{
   Map<MealSlot, Recipe?> _mealPlan = {
@@ -21,6 +22,22 @@ class MealPlan{
   ///Use this to retrieve the recipe at a given meal slot
   Recipe? getRecipeAtSlot({required MealSlot slot}){
     return _mealPlan[slot];
+  }
+
+  List<Ingredient> getAllIngredients(){
+    List<Ingredient> ingredients = [];
+
+    for(var kv in _mealPlan.entries){
+      Recipe? recipe = kv.value;
+
+      if(recipe == null) continue;
+
+      for(Ingredient i in recipe.getIngredients()){
+        ingredients.add(i);
+      }
+    }
+
+    return ingredients;
   }
 }
 

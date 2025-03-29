@@ -1,4 +1,6 @@
-﻿import 'day.dart';
+﻿import 'package:recipe_app/Backend/Core/Recipe/ingredient.dart';
+
+import 'day.dart';
 import 'month.dart';
 
 class Year {
@@ -12,6 +14,18 @@ class Year {
       months.add(Month(monthNumber, firstDayOfYear, isLeapYear: _isLeapYear(year)));
       firstDayOfYear = (firstDayOfYear + months[monthNumber - 1].daysInMonth) % 7;
     }
+  }
+
+  List<Ingredient> getYearMealPlanIngredients(){
+    List<Ingredient> ingredients = [];
+
+    for(Month month in months){
+      for(Ingredient i in month.getMonthMealPlanIngredients()){
+        ingredients.add(i);
+      }
+    }
+
+    return ingredients;
   }
 
   bool _isLeapYear(int year) {

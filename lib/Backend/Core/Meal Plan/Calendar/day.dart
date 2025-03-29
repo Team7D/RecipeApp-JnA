@@ -1,4 +1,6 @@
-﻿import '../meal_plan.dart';
+﻿import 'package:recipe_app/Backend/Core/Recipe/ingredient.dart';
+
+import '../meal_plan.dart';
 
 class Day {
   int dayNumber;
@@ -13,6 +15,10 @@ class Day {
     print("${_getDayOfWeek(dayOfWeek)} $dayNumber${_getOrdinalSuffix(dayNumber)}");
     mealPlan.display();
     print("");
+  }
+
+  List<Ingredient> getMealPlanIngredients(){
+    return mealPlan.getAllIngredients();
   }
 
 

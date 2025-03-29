@@ -1,4 +1,6 @@
-﻿import 'day.dart';
+﻿import 'package:recipe_app/Backend/Core/Recipe/ingredient.dart';
+
+import 'day.dart';
 
 class Month {
   int monthNumber;
@@ -11,6 +13,31 @@ class Month {
     daysInMonth = _getDaysInMonth(monthNumber, isLeapYear);
     monthName = MonthOfYear.values[monthNumber - 1].toString().split('.').last;
     _generateDays();
+  }
+
+
+  List<Ingredient> getMonthMealPlanIngredients(){
+    List<Ingredient> ingredients = [];
+
+    for(Day day in days){
+      for(Ingredient i in day.getMealPlanIngredients()){
+        ingredients.add(i);
+      }
+    }
+
+    return ingredients;
+  }
+
+  List<Ingredient> getWeekMealPlanIngredients({required int startingDay}){
+    List<Ingredient> ingredients = [];
+
+    for(int i = startingDay; i < startingDay+7; i++){
+      for(Ingredient i in days[i].getMealPlanIngredients()){
+        ingredients.add(i);
+      }
+    }
+
+    return ingredients;
   }
 
   void _generateDays() {
