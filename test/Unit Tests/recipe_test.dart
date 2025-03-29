@@ -1,10 +1,10 @@
-﻿import 'package:recipe_app/Backend/Core/Recipes/difficulty.dart';
-import 'package:recipe_app/Backend/Core/Recipes/image_info.dart';
-import 'package:recipe_app/Backend/Core/Recipes/ingredient.dart';
-import 'package:recipe_app/Backend/Core/Recipes/instruction.dart';
-import 'package:recipe_app/Backend/Core/Recipes/rating.dart';
-import 'package:recipe_app/Backend/Core/Recipes/recipe.dart';
-import 'package:recipe_app/Backend/Core/Recipes/time.dart';
+﻿import 'package:recipe_app/Backend/Core/Recipe/difficulty.dart';
+import 'package:recipe_app/Backend/Core/Recipe/image_info.dart';
+import 'package:recipe_app/Backend/Core/Recipe/ingredient.dart';
+import 'package:recipe_app/Backend/Core/Recipe/instruction.dart';
+import 'package:recipe_app/Backend/Core/Recipe/rating.dart';
+import 'package:recipe_app/Backend/Core/Recipe/recipe.dart';
+import 'package:recipe_app/Backend/Core/Recipe/time.dart';
 import 'package:test/test.dart';
 
 void main() {
