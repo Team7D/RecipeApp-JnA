@@ -32,7 +32,7 @@ class LoginPage extends StatelessWidget {
                 ),
                 onPressed: () async {
                   //Login
-                  await loginWithGoogle();
+                  //await loginWithGoogle();
                   // Navigate to HomePage on login
                   Navigator.pushReplacement(
                     context,
