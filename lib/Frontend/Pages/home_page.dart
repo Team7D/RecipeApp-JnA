@@ -26,17 +26,6 @@ class _HomePageState extends State<HomePage> {
     fetchRandomRecipes();
 
     //TESTING
-    createMealPlan();
-  }
-
-  void createMealPlan(){
-    Calendar calendar = Calendar();
-    Day? today = calendar.today();
-    today?.mealPlan.setSlotRecipe(MealSlot.Breakfast, Recipe("3", "Pancakes", RecipeImageInfo("", ""), [], [], Time("2", "2"), Rating(2,2), Difficulty(level: 'Easy')));
-
-    calendar.thisYear()?.display();
-
-    Recipe? brekky = today?.mealPlan.getRecipeAtSlot(slot: MealSlot.Breakfast);
   }
 
   Future<void> fetchRandomRecipes() async {

@@ -46,7 +46,7 @@ void main() {
       [],
       Time('', ''),
       Rating(0, 0),
-      Difficulty(level: 'Easy'),
+      Difficulty(level: 'Any'),
     );
 
     expect(recipe.getIngredients().isEmpty, equals(true));

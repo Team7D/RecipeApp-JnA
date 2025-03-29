@@ -4,13 +4,7 @@ import '../../Backend/Core/Recipe/recipe.dart';
 class RecipePage extends StatelessWidget {
   final Recipe recipe;
 
-  RecipePage({required this.recipe}){
-    test();
-  }
-
-  test(){
-    recipe.displayMacros();
-  }
+  RecipePage({required this.recipe}){}
 
   @override
   Widget build(BuildContext context) {

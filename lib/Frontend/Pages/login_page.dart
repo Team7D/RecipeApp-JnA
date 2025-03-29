@@ -32,7 +32,7 @@ class LoginPage extends StatelessWidget {
                 ),
                 onPressed: () async {
                   //Login
-                  //await loginWithGoogle();
+                  await loginWithGoogle();
                   // Navigate to HomePage on login
                   Navigator.pushReplacement(
                     context,
@@ -48,22 +48,6 @@ class LoginPage extends StatelessWidget {
     );
   }
 
-  Widget _buildTextField(String label, {bool obscureText = false}) {
-    return TextField(
-      obscureText: obscureText,
-      decoration: InputDecoration(
-        labelText: label,
-        labelStyle: TextStyle(color: Color(0xFF6B4226)),
-        filled: true,
-        fillColor: Colors.white,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-        focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Color(0xFFFFA559), width: 2),
-          borderRadius: BorderRadius.circular(10),
-        ),
-      ),
-    );
-  }
 }
 
 
