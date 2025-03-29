@@ -21,10 +21,7 @@ class DefaultFirebaseOptions {
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for android - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return android;
       case TargetPlatform.iOS:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for ios - '
@@ -36,10 +33,7 @@ class DefaultFirebaseOptions {
           'you can reconfigure this by running the FlutterFire CLI again.',
         );
       case TargetPlatform.windows:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for windows - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return windows;
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
@@ -61,4 +55,23 @@ class DefaultFirebaseOptions {
     storageBucket: 'recipeapp-edda9.firebasestorage.app',
     measurementId: 'G-ZJXQB41WYZ',
   );
+
+  static const FirebaseOptions windows = FirebaseOptions(
+    apiKey: 'AIzaSyB0QHCuzrAYOASuH1R6LzWgCVkbLuWJRnE',
+    appId: '1:275613981678:web:e5e4d02525768da0f90cff',
+    messagingSenderId: '275613981678',
+    projectId: 'recipeapp-edda9',
+    authDomain: 'recipeapp-edda9.firebaseapp.com',
+    storageBucket: 'recipeapp-edda9.firebasestorage.app',
+    measurementId: 'G-Z251WMJZNH',
+  );
+
+  static const FirebaseOptions android = FirebaseOptions(
+    apiKey: 'AIzaSyB0cKG-zk2Ti_gbOqFCnmICtizIsdwPH3A',
+    appId: '1:275613981678:android:b8919676e6628c90f90cff',
+    messagingSenderId: '275613981678',
+    projectId: 'recipeapp-edda9',
+    storageBucket: 'recipeapp-edda9.firebasestorage.app',
+  );
+
 }

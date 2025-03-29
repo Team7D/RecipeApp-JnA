@@ -8,23 +8,5 @@ import 'ingredient.dart';
 import 'instruction.dart';
 
 class RecipeTesting{
-  List<Recipe> currentRecipes = [];
 
-  Future<void> getAllRecipes() async{
-    Filter filter = Filter(title: "", ingredients: [Ingredient("Bacon", 5, "g")], duration: null, rating: null, difficulty: Difficulty(level: "Easy"));
-
-    List<Recipe> recipes = await getAllRecipesWithFilter(filter);
-
-    print(recipes.length);
-
-    for(Recipe r in recipes){
-      print(r.getTitle());
-    }
-  }
-
-  void upload(){
-    for(Recipe currentRecipe in currentRecipes) {
-      uploadRecipe(currentRecipe);
-    }
-  }
 }

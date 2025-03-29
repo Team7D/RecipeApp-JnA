@@ -39,11 +39,44 @@ class Recipe {
         return "Medium";
       case Level.Hard:
         return "Hard";
+      case Level.None:
+        return "Any";
     }
   }
-  void display(){
-    print("ID: " + _id);
-    print(_title);
+
+  String displayMacros(){
+    String returnValue = "";
+
+    double totalCals = 0;
+    double totalCarbs = 0;
+    double totalProteins = 0;
+    double totalFats = 0;
+    double totalFiber = 0;
+
+    for(Ingredient i in _ingredients){
+      Macros? macros = i.getMacros();
+      if(macros == null) continue;
+
+      totalCals += macros.calories;
+      totalCarbs += macros.carbohydrates;
+      totalProteins += macros.proteins;
+      totalFats += macros.fats;
+      totalFiber += macros.fiber;
+    }
+
+    print("Total Macros");
+    print('Carbohydrates: $totalCarbs g');
+    returnValue += "Carbohydrates: ${totalCarbs.toStringAsFixed(1)}\n";
+    print('Proteins: $totalProteins g');
+    returnValue += "Proteins: ${totalProteins.toStringAsFixed(1)}\n";
+    print('Fats: $totalFats g');
+    returnValue += "Fats: ${totalFats.toStringAsFixed(1)}\n";
+    print('Calories: $totalCals kcal');
+    returnValue += "Calories: ${totalCals.toStringAsFixed(1)}\n";
+    print('Fiber: $totalFiber g');
+    returnValue += "Fiber: ${totalFiber.toStringAsFixed(1)}\n";
+
+    return returnValue;
   }
   bool hasIngredient(Ingredient ingredient){
     for(Ingredient i in _ingredients){
@@ -54,13 +87,16 @@ class Recipe {
     return false;
   }
   bool MatchesFilter(Filter filter) {
-    if (filter.title != "" && !_title.contains(filter.title.toString())) {
+    if ((filter.title != null && filter.title != "") && !_title.contains(filter.title.toString())) {
       print("Doesn't match title");
       return false; // If the title doesn't match
     }
-    if (filter.difficulty != null && _difficulty.getLevel() != filter.difficulty!.getLevel()) {
-      print("Doesn't match difficulty");
-      return false; // If the difficulty doesn't match
+    if(filter.difficulty?.getLevel() != Level.None) {
+      if (filter.difficulty != null &&
+          _difficulty.getLevel() != filter.difficulty!.getLevel()) {
+        print("Doesn't match difficulty");
+        return false; // If the difficulty doesn't match
+      }
     }
     if (filter.duration != null &&
         int.parse(_duration.getTotalTime()) >
@@ -81,7 +117,6 @@ class Recipe {
       }
     }
 
-    print("Matches");
     return true; // Otherwise return true as we meet all criteria
   }
 }
@@ -100,7 +135,7 @@ Future<void> uploadRecipe(Recipe recipe) async {
         return {
           'name': ingredient.getName(),
           'quantity': ingredient.getQuantity(),
-          'unit': ingredient.getUnit(),
+          'unit': ingredient.getMeasurement().toString(),
         };
       }).toList(),
       'instructions': recipe.getInstructions().map((instruction) {
@@ -245,10 +280,6 @@ Future<List<Recipe>> getAllRecipesWithTitleFilter(String filter) async{
     }
   }
 
-  for(Recipe r in filteredRecipes){
-    print(r.getTitle());
-  }
-
   return filteredRecipes;
 }
 
@@ -261,11 +292,6 @@ Future<List<Recipe>> getAllRecipesWithIngredientFilter(List<Ingredient> ingredie
     if (ingredients.every((i) => r.hasIngredient(i))) {
       filteredRecipes.add(r);
     }
-  }
-
-
-  for(Recipe r in filteredRecipes){
-    print(r.getTitle());
   }
 
   return filteredRecipes;
@@ -281,11 +307,6 @@ Future<List<Recipe>> getAllRecipesWithFilter(Filter filter) async {
     }
   }
 
-
-  for(Recipe r in filteredRecipes){
-    print(r.getTitle());
-  }
-
   return filteredRecipes;
 }
 
@@ -297,54 +318,34 @@ class Filter{
   late Difficulty? difficulty;
 
   Filter({required this.title, required this.ingredients, required this.duration, required this.rating, required this.difficulty});
+
+  bool isEmpty(){
+    if(title != null){
+      print("TITLE IS NOT NULL");
+      return false;
+    }
+
+    if(ingredients.isNotEmpty){
+      print("INGREDIENTS ARE NOT EMPTY");
+      return false;
+    }
+
+    if(duration != null){
+      print("DURATION IS NOT NULL");
+      return false;
+    }
+
+    if(rating != null) {
+      print("RATING IS NOT NULL");
+      return false;
+    }
+
+    if(difficulty != null || difficulty?.getLevel() == Level.None){
+      print("DIFFICULTY IS NOT NULL OR IT IS SET TO ANY");
+      return false;
+    }
+
+    return true;
+  }
 }
-
-
-
-  // // Creating some example ingredients
-  // var ingredient1 = Ingredient(name: 'Spaghetti', quantity: 200, unit: 'g');
-  // var ingredient2 = Ingredient(name: 'Bacon', quantity: 100, unit: 'g');
-  // var ingredient3 = Ingredient(name: 'Eggs', quantity: 2, unit: '');
-  //
-  // // Creating instructions
-  // var instruction1 = Instruction(stepNumber: 1, instruction: 'Boil the spaghetti.');
-  // var instruction2 = Instruction(stepNumber: 2, instruction: 'Fry the bacon until crispy.');
-  // var instruction3 = Instruction(stepNumber: 3, instruction: 'Mix the eggs with Parmesan cheese.');
-  //
-  // // Time for cooking
-  // var time = Time(preparationTime: '10', cookingTime: '15');
-  //
-  // // Difficulty level
-  // var difficulty = Difficulty(level: Levels.Medium);
-  //
-  // // Image information
-  // var image = ImageInfo(url: 'https://example.com/spaghetti.jpg', description: 'Spaghetti with bacon');
-  //
-  // // Rating
-  // var rating = Rating(averageRating: 4.5, reviewCount: 120);
-  //
-  // // Creating the recipe
-  // var recipe = Recipe(
-  //   id: '1',
-  //   title: 'Spaghetti Carbonara',
-  //   image: image,
-  //   ingredients: [ingredient1, ingredient2, ingredient3],
-  //   instructions: [instruction1, instruction2, instruction3],
-  //   duration: time,
-  //   rating: rating,
-  //   difficulty: difficulty,
-  // );
-  //
-  // // Displaying recipe details
-  // print(recipe.title);
-  // print('Ingredients:');
-  // for (var ingredient in recipe.ingredients) {
-  //   print('${ingredient.quantity} ${ingredient.unit} ${ingredient.name}');
-  // }
-  // print('Instructions:');
-  // for (var instruction in recipe.instructions) {
-  //   print('Step ${instruction.stepNumber}: ${instruction.instruction}');
-  // }
-  // print('Total Time: ${recipe.duration.totalTime}');
-  // print('Rating: ${recipe.rating.averageRating} stars (${recipe.rating.reviewCount} reviews)');
 

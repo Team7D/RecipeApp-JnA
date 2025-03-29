@@ -15,10 +15,20 @@ Future<void> loginWithGoogle() async {
     //TODO : Ignore this section just for testing stuff...
     RecipeTesting rt = RecipeTesting();
     print("Getting all recipes with filter:");
-    await rt.getAllRecipes();
 
   } catch (error) {
     print("Error logging in");
+  }
+}
+
+///DONT USE THIS, FOR TEST PURPOSES ONLY
+Future<void> loginWithCustom() async {
+  final FirebaseAuth auth = FirebaseAuth.instance;
+
+  try {
+    await auth.signInWithEmailAndPassword(email: "test@gmail.com", password: "testing");
+  } catch (error) {
+    print(error);
   }
 }
 
