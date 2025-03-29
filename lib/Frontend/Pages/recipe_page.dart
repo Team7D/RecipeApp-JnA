@@ -4,7 +4,13 @@ import '../../Backend/Core/Recipes/recipe.dart';
 class RecipePage extends StatelessWidget {
   final Recipe recipe;
 
-  RecipePage({required this.recipe});
+  RecipePage({required this.recipe}){
+    test();
+  }
+
+  test(){
+    recipe.displayMacros();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,12 +51,20 @@ class RecipePage extends StatelessWidget {
             ),
             SizedBox(height: 20),
             Text(
+              "Nutritional Information",
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xFF6B4226)),
+            ),
+            Text(
+                "${recipe.displayMacros()}",
+                style: TextStyle(fontSize: 16, color: Color(0xFF6B4226)),
+            ),
+            Text(
               "Ingredients",
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xFF6B4226)),
             ),
             ...recipe.getIngredients().map((ingredient) => Padding(
               padding: const EdgeInsets.only(top: 5.0),
-              child: Text("• ${ingredient.getName()} (${ingredient.getQuantity()})",
+              child: Text("• ${ingredient.getName()} (${ingredient.getQuantity()}${ingredient.getUnit()})",
                   style: TextStyle(fontSize: 16, color: Color(0xFF6B4226))),
             )),
             SizedBox(height: 20),

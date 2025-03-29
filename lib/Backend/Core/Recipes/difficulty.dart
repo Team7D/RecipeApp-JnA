@@ -12,6 +12,9 @@
       case "Hard":
         _level = Level.Hard;
         break;
+      case "Any":
+        _level = Level.None;
+        break;
     }
   }
 
@@ -19,6 +22,7 @@
 }
 
 enum Level{
+  None,
   Easy,
   Medium,
   Hard
