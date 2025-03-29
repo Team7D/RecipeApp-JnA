@@ -21,6 +21,17 @@ Future<void> loginWithGoogle() async {
   }
 }
 
+///DONT USE THIS, FOR TEST PURPOSES ONLY
+Future<void> loginWithCustom() async {
+  final FirebaseAuth auth = FirebaseAuth.instance;
+
+  try {
+    await auth.signInWithEmailAndPassword(email: "test@gmail.com", password: "testing");
+  } catch (error) {
+    print(error);
+  }
+}
+
 ///Signs the user out
 Future<void> logout() async {
   await FirebaseAuth.instance.signOut();
