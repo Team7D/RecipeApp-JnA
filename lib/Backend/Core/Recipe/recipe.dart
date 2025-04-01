@@ -7,7 +7,7 @@ import 'ingredient.dart';
 import 'instruction.dart';
 
 class Recipe {
-  final String _id;
+  late final String _id;
   final String _title;
   final RecipeImageInfo _image;
   final List<Ingredient> _ingredients;
@@ -113,21 +113,57 @@ class Recipe {
     //TODO: Ingredient check
     for(Ingredient i in filter.ingredients){
       if(!hasIngredient(i)){
-        return false; // If there is an ingredient mismatch
+        return false;
       }
     }
 
-    return true; // Otherwise return true as we meet all criteria
+    return true;
+  }
+}
+
+
+///Returns a newly created recipe with the provided inputs. Recipe ingredients needs to be in format [Ingredient] , [Amount]. Recipe ingredient units is a List of Strings corresponding to each ingredient. Instructions is a Map of [StepNumber] , [Instruction]
+Recipe? createRecipe({required String recipeTitle, required String recipeThumbnailLink, required Map<String, int> recipeIngredients, required List<String> recipeIngredientUnits, required Map<int, String> recipeInstructions, required String recipePrepTime, required String recipeCookTime, required String recipeDifficulty}){
+  try {
+    RecipeImageInfo imageInfo = RecipeImageInfo(
+        recipeThumbnailLink, "Image of a : ${recipeTitle}");
+    List<Ingredient> ingredients = [];
+
+    int ingredientIndex = 0;
+    for(var kv in recipeIngredients.entries){
+      ingredients.add(Ingredient(kv.key, kv.value, recipeIngredientUnits[ingredientIndex]));
+      ingredientIndex++;
+    }
+    List<Instruction> instructions = [];
+    for(var kv in recipeInstructions.entries){
+      instructions.add(Instruction(kv.key, kv.value));
+    }
+    Time duration = Time(recipePrepTime, recipeCookTime);
+    Rating rating = Rating(0, 0);
+    Difficulty difficulty = Difficulty(level: recipeDifficulty);
+    Recipe newRecipe = Recipe(
+        "temporary ID",
+        recipeTitle,
+        imageInfo,
+        ingredients,
+        instructions,
+        duration,
+        rating,
+        difficulty);
+
+    print("Recipe Creation Successful");
+    return newRecipe;
+  } catch(e){
+    print("Error creating recipe");
+    return null;
   }
 }
 
 /// Function to upload a recipe to Firestore, user must be signed in for this to work.
 Future<void> uploadRecipe(Recipe recipe) async {
   try {
-    // Create a reference to the 'recipes' collection in Firestore
     CollectionReference recipesRef = FirebaseFirestore.instance.collection('recipes');
 
-    // Prepare the recipe data to be uploaded
     Map<String, dynamic> recipeData = {
       'title': recipe.getTitle(),
       'imageUrl': recipe.getImageUrl(),
@@ -150,7 +186,6 @@ Future<void> uploadRecipe(Recipe recipe) async {
       },
     };
 
-    // Add the recipe to the Firestore collection
     await recipesRef.add(recipeData);
     print('Recipe uploaded successfully!');
   } catch (e) {
@@ -161,24 +196,19 @@ Future<void> uploadRecipe(Recipe recipe) async {
 /// Function to retrieve a recipe from Firestore by its ID
 Future<Recipe?> retrieveRecipe(String recipeId) async {
   try {
-    // Get a reference to the 'recipes' collection
     CollectionReference recipesRef = FirebaseFirestore.instance.collection('recipes');
 
-    // Get the recipe document by its ID
     DocumentSnapshot recipeDoc = await recipesRef.doc(recipeId).get();
 
     if (recipeDoc.exists) {
-      // Convert Firestore document data to Recipe model using getter methods
       Map<String, dynamic> data = recipeDoc.data() as Map<String, dynamic>;
 
-      // Convert the ingredients from Firestore data to a list of Ingredient objects
       List<Ingredient> ingredients = (data['ingredients'] as List).map((ingredientData) {
         return Ingredient(ingredientData['name'],
           ingredientData['quantity'],
           ingredientData['unit'],);
       }).toList();
 
-      // Convert the instructions from Firestore data to a list of Instruction objects
       List<Instruction> instructions = (data['instructions'] as List).map((instructionData) {
         return Instruction(
           instructionData['stepNumber'],
@@ -186,7 +216,6 @@ Future<Recipe?> retrieveRecipe(String recipeId) async {
         );
       }).toList();
 
-      // Create and return the Recipe object using getter methods
       return Recipe(
         recipeDoc.id,
         data['title'],
@@ -205,28 +234,24 @@ Future<Recipe?> retrieveRecipe(String recipeId) async {
       );
     } else {
       print('Recipe not found');
-      return null; // Return null if the recipe doesn't exist
+      return null;
     }
   } catch (e) {
     print('Error retrieving recipe: $e');
-    return null; // Return null in case of any errors
+    return null;
   }
 }
 
 /// Function to retrieve ALL recipes from the Firestore, this will become bad if there is a lot of recipes.
 Future<List<Recipe>> retrieveAllRecipes() async {
   try {
-    // Get a reference to the 'recipes' collection
     CollectionReference recipesRef = FirebaseFirestore.instance.collection('recipes');
 
-    // Get all recipe documents in the 'recipes' collection
     QuerySnapshot querySnapshot = await recipesRef.get();
 
-    // Map each document to a Recipe object
     List<Recipe> recipes = querySnapshot.docs.map((recipeDoc) {
       Map<String, dynamic> data = recipeDoc.data() as Map<String, dynamic>;
 
-      // Convert the ingredients from Firestore data to a list of Ingredient objects
       List<Ingredient> ingredients = (data['ingredients'] as List).map((ingredientData) {
         return Ingredient(
           ingredientData['name'],
@@ -235,7 +260,6 @@ Future<List<Recipe>> retrieveAllRecipes() async {
         );
       }).toList();
 
-      // Convert the instructions from Firestore data to a list of Instruction objects
       List<Instruction> instructions = (data['instructions'] as List).map((instructionData) {
         return Instruction(
           instructionData['stepNumber'],
@@ -243,7 +267,6 @@ Future<List<Recipe>> retrieveAllRecipes() async {
         );
       }).toList();
 
-      // Create and return the Recipe object using getter methods
       return Recipe(
         recipeDoc.id,
         data['title'],
@@ -262,11 +285,10 @@ Future<List<Recipe>> retrieveAllRecipes() async {
       );
     }).toList();
 
-    // Return the list of all recipes
     return recipes;
   } catch (e) {
     print('Error retrieving recipes: $e');
-    return []; // Return an empty list in case of any errors
+    return [];
   }
 }
 
@@ -288,7 +310,6 @@ Future<List<Recipe>> getAllRecipesWithIngredientFilter(List<Ingredient> ingredie
   List<Recipe> filteredRecipes = [];
 
   for (Recipe r in allRecipes) {
-    // Check if all required ingredients are present in the recipe
     if (ingredients.every((i) => r.hasIngredient(i))) {
       filteredRecipes.add(r);
     }

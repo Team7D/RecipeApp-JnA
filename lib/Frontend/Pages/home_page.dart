@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:recipe_app/Backend/Core/Meal%20Plan/meal_plan.dart';
 import 'package:recipe_app/Backend/Core/Recipe/difficulty.dart';
 import 'package:recipe_app/Backend/Core/Recipe/image_info.dart';
+import 'package:recipe_app/Backend/Core/Recipe/ingredient.dart';
 import 'package:recipe_app/Backend/Core/Recipe/rating.dart';
 import 'dart:math';
 import '../../Backend/Core/Meal Plan/Calendar/calendar.dart';

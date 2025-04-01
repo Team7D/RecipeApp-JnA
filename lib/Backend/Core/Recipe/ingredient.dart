@@ -11,6 +11,11 @@ class Ingredient {
     Init();
   }
 
+  @override
+  String toString(){
+    return _quantity.toString() + _unit + " " + _name;
+  }
+
   String getName() => _name;
 
   int getQuantity() => _quantity;
