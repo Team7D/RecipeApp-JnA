@@ -11,6 +11,8 @@ import 'search_page.dart';
 import 'shopping_list.dart';
 import '../../Backend/Core/Recipe/recipe.dart';
 import 'recipe_page.dart';
+import 'add_recipe_page.dart';
+import 'meal_plan_page.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -24,8 +26,6 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     fetchRandomRecipes();
-
-    //TESTING
   }
 
   Future<void> fetchRandomRecipes() async {
@@ -65,6 +65,15 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Color(0xFFFFA559),
         actions: [
           IconButton(
+            icon: Icon(Icons.add, color: Colors.white),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => AddRecipePage()),
+              );
+            },
+          ),
+          IconButton(
             icon: Icon(Icons.shopping_cart, color: Colors.white),
             onPressed: () {
               Navigator.push(
@@ -82,64 +91,75 @@ class _HomePageState extends State<HomePage> {
               );
             },
           ),
+          IconButton(
+            icon: Icon(Icons.calendar_today, color: Colors.white),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => MealPlanPage()),
+              );
+            },
+          ),
         ],
       ),
-      body: recipes.isEmpty
-          ? Center(child: CircularProgressIndicator())
-          : Padding(
-        padding: EdgeInsets.all(10.0),
-        child: ListView.builder(
-          itemCount: recipes.length,
-          itemBuilder: (context, index) {
-            return GestureDetector(
-              onTap: () => _navigateToRecipePage(recipes[index]),
-              child: Card(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15)),
-                elevation: 4,
-                margin: EdgeInsets.symmetric(vertical: 10),
-                child: Stack(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(15),
-                      child: Image.network(
-                        recipes[index].getImageUrl(),
-                        width: double.infinity,
-                        height: 180,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    Container(
-                      width: double.infinity,
-                      height: 180,
-                      decoration: BoxDecoration(
+      body: Expanded(
+        child: recipes.isEmpty
+            ? Center(child: CircularProgressIndicator())
+            : Padding(
+          padding: EdgeInsets.all(10.0),
+          child: ListView.builder(
+            itemCount: recipes.length,
+            itemBuilder: (context, index) {
+              return GestureDetector(
+                onTap: () => _navigateToRecipePage(recipes[index]),
+                child: Card(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15)),
+                  elevation: 4,
+                  margin: EdgeInsets.symmetric(vertical: 10),
+                  child: Stack(
+                    children: [
+                      ClipRRect(
                         borderRadius: BorderRadius.circular(15),
-                        gradient: LinearGradient(
-                          colors: [
-                            Colors.black.withOpacity(0.5),
-                            Colors.transparent
-                          ],
-                          begin: Alignment.bottomCenter,
-                          end: Alignment.topCenter,
+                        child: Image.network(
+                          recipes[index].getImageUrl(),
+                          width: double.infinity,
+                          height: 180,
+                          fit: BoxFit.cover,
                         ),
                       ),
-                    ),
-                    Positioned(
-                      bottom: 10,
-                      left: 15,
-                      child: Text(
-                        recipes[index].getTitle(),
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold),
+                      Container(
+                        width: double.infinity,
+                        height: 180,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(15),
+                          gradient: LinearGradient(
+                            colors: [
+                              Colors.black.withOpacity(0.5),
+                              Colors.transparent
+                            ],
+                            begin: Alignment.bottomCenter,
+                            end: Alignment.topCenter,
+                          ),
+                        ),
                       ),
-                    ),
-                  ],
+                      Positioned(
+                        bottom: 10,
+                        left: 15,
+                        child: Text(
+                          recipes[index].getTitle(),
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            );
-          },
+              );
+            },
+          ),
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -156,6 +176,9 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
+
+
+
 
 
 
