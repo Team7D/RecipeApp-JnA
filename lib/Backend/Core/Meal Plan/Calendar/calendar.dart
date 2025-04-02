@@ -146,21 +146,30 @@ class Calendar {
     month.displayDay(dayNumber);
   }
 
-  Future<void> updateCalendar(Map<String, dynamic> map) async{
+  Map<String, Recipe> recipeCache = {};
+  Future<void> updateCalendar(Map<String, dynamic> map) async {
     String date = map['date'];
     String recipeID = map['recipeID'];
+
+    Recipe? recipe;
+
+    if (recipeCache.containsKey(recipeID)) {
+      recipe = recipeCache[recipeID]!;
+    } else {
+      recipe = await retrieveRecipe(recipeID);
+      recipeCache[recipeID] = recipe!;
+    }
+
+    print(recipeCache);
 
     List<String> dateData = date.split(" ");
     int day = int.parse(dateData[0]);
     int month = int.parse(dateData[1]);
     int year = int.parse(dateData[2]);
 
-    Recipe? recipe = await retrieveRecipe(recipeID);
-
     Day? selectedDay = this.getDayInMonthInYear(year, month, day);
 
-    selectedDay?.mealPlan.setSlotRecipe(MealSlot.Breakfast, recipe!);
-
+    selectedDay?.mealPlan.setSlotRecipe(MealSlot.Breakfast, recipe);
   }
 }
 

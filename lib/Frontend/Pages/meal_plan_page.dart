@@ -32,12 +32,21 @@ class _MealPlanPageState extends State<MealPlanPage> {
   }
 
   Future<void> fetchUserCalendarData() async {
-    List<Map<String, dynamic>> returnData = await getUserCalendarData(FirebaseAuth.instance.currentUser!.uid);
-    for(var item in returnData){
-      await calendar.updateCalendar(item);
-    }
+    try {
+      List<Map<String, dynamic>> returnData = await getUserCalendarData(FirebaseAuth.instance.currentUser!.uid);
 
-    setState(() {});
+      List<Future<void>> updateFutures = [];
+
+      for (var item in returnData) {
+        updateFutures.add(calendar.updateCalendar(item));
+      }
+
+      await Future.wait(updateFutures);
+
+      setState(() {});
+    } catch (e) {
+      print("Error fetching user calendar data: $e");
+    }
   }
 
   Future<void> updateUserCalendarData(Day selectedDay, String recipeID) async {
@@ -93,7 +102,7 @@ class _MealPlanPageState extends State<MealPlanPage> {
     Month? thisMonth = calendar.thisMonth();
     if(thisMonth != null){
       //Then build the calendar with the days of this month
-      thisMonth.display();
+      //thisMonth.display();
     }
     return GridView.builder(
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
