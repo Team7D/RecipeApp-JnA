@@ -11,7 +11,9 @@ class Year {
   Year(this.year) {
     firstDayOfYear = _calculateFirstDayOfYear(year);
     for (int monthNumber = 1; monthNumber <= 12; monthNumber++) {
-      months.add(Month(monthNumber, firstDayOfYear, isLeapYear: _isLeapYear(year)));
+      Month m = Month(monthNumber, firstDayOfYear, isLeapYear: _isLeapYear(year));
+      m.setYear(this);
+      months.add(m);
       firstDayOfYear = (firstDayOfYear + months[monthNumber - 1].daysInMonth) % 7;
     }
   }

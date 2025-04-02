@@ -1,8 +1,10 @@
 ﻿import 'package:recipe_app/Backend/Core/Recipe/ingredient.dart';
 
 import '../meal_plan.dart';
+import 'month.dart';
 
 class Day {
+  late final Month monthBelongsTo;
   int dayNumber;
   int dayOfWeek; // Day of the week (0 = Saturday, 1 = Sunday, ..., 6 = Friday)
   late MealPlan mealPlan;
@@ -11,8 +13,10 @@ class Day {
     mealPlan = MealPlan();
   }
 
+  void setMonth(Month m) => monthBelongsTo = m;
+
   void display() {
-    print("${_getDayOfWeek(dayOfWeek)} $dayNumber${_getOrdinalSuffix(dayNumber)}");
+    print("${getDayOfWeek(dayOfWeek)} $dayNumber${_getOrdinalSuffix(dayNumber)}");
     mealPlan.display();
     print("");
   }
@@ -49,7 +53,7 @@ enum MonthOfYear {
 }
 
 // Convert day number to a day of the week
-String _getDayOfWeek(int dayCode) {
+String getDayOfWeek(int dayCode) {
   switch (dayCode) {
     case 0: return "Saturday";
     case 1: return "Sunday";

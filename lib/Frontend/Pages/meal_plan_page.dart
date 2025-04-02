@@ -1,6 +1,9 @@
-﻿import 'package:flutter/material.dart';
+﻿import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:recipe_app/Backend/Core/Meal%20Plan/meal_plan.dart';
 import 'package:recipe_app/Backend/Core/Recipe/recipe.dart';
+import '../../Backend/Core/Meal Plan/Calendar/day.dart';
+import '../../Backend/Core/Meal Plan/Calendar/month.dart';
 import '../../Backend/Core/Meal%20Plan/Calendar/calendar.dart';
 
 
@@ -11,13 +14,13 @@ class MealPlanPage extends StatefulWidget {
 
 class _MealPlanPageState extends State<MealPlanPage> {
   List<Recipe> recipes = [];
-  MealPlan mealPlan = MealPlan();
   Calendar calendar = Calendar();
 
   @override
   void initState() {
     super.initState();
     fetchRecipes();
+    fetchUserCalendarData();
   }
 
 
@@ -28,14 +31,32 @@ class _MealPlanPageState extends State<MealPlanPage> {
     });
   }
 
-
-  void _selectRecipeForDay(DateTime date) async {
-    Recipe? selectedRecipe = await _pickRecipe();
-    if (selectedRecipe != null) {
-      setState(() {
-        mealPlan.setSlotRecipe(MealSlot.Breakfast, selectedRecipe);
-      });
+  Future<void> fetchUserCalendarData() async {
+    List<Map<String, dynamic>> returnData = await getUserCalendarData(FirebaseAuth.instance.currentUser!.uid);
+    for(var item in returnData){
+      await calendar.updateCalendar(item);
     }
+
+    setState(() {});
+  }
+
+  Future<void> updateUserCalendarData(Day selectedDay, String recipeID) async {
+    String date = selectedDay.dayNumber.toString() + " " +
+    selectedDay.monthBelongsTo.monthNumber.toString() + " " +
+    selectedDay.monthBelongsTo.yearBelongsTo.year.toString();
+
+    addOrOverwriteEventToUserCalendar(FirebaseAuth.instance.currentUser!.uid, date, recipeID);
+  }
+
+
+  void _selectRecipeForDay(Day day) async {
+    Recipe? selectedRecipe = await _pickRecipe();
+    if (selectedRecipe == null) return;
+
+    updateUserCalendarData(day, selectedRecipe.getID());
+    setState(() {
+      day.mealPlan.setSlotRecipe(MealSlot.Breakfast, selectedRecipe);
+    });
   }
 
 
@@ -68,27 +89,38 @@ class _MealPlanPageState extends State<MealPlanPage> {
 
 
   Widget _buildCalendar() {
+    //Get this current month
+    Month? thisMonth = calendar.thisMonth();
+    if(thisMonth != null){
+      //Then build the calendar with the days of this month
+      thisMonth.display();
+    }
     return GridView.builder(
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 7,
         childAspectRatio: 1.0,
       ),
-      itemCount: 30,
+      itemCount: thisMonth?.days.length,
       itemBuilder: (context, index) {
-        DateTime day = DateTime.now().add(Duration(days: index));
+        //Get the first day of this month
+        Day? thisDay = thisMonth?.days[index];
         return GestureDetector(
-          onTap: () => _selectRecipeForDay(day),
+          onTap: () => _selectRecipeForDay(thisDay!),
           child: Card(
             color: Colors.white,
             margin: EdgeInsets.all(4),
             child: Column(
               children: [
                 Text(
-                  day.day.toString(),
+                  thisMonth!.days[index].dayNumber.toString(),
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
-                if (mealPlan.getRecipeAtSlot(slot: MealSlot.Breakfast) != null)
-                  Text(mealPlan.getRecipeAtSlot(slot: MealSlot.Breakfast)!.getTitle(), style: TextStyle(fontSize: 12)),
+                Text(
+                  getDayOfWeek(thisMonth.days[index].dayOfWeek),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                if (thisDay!.mealPlan.getRecipeAtSlot(slot: MealSlot.Breakfast) != null)
+                  Text(thisDay.mealPlan.getRecipeAtSlot(slot: MealSlot.Breakfast)!.getTitle(), style: TextStyle(fontSize: 16)),
               ],
             ),
           ),

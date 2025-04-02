@@ -1,4 +1,5 @@
-﻿import 'package:recipe_app/Backend/Core/Recipe/ingredient.dart';
+﻿import 'package:recipe_app/Backend/Core/Meal%20Plan/Calendar/year.dart';
+import 'package:recipe_app/Backend/Core/Recipe/ingredient.dart';
 
 import 'day.dart';
 
@@ -8,6 +9,7 @@ class Month {
   late int daysInMonth;
   late String monthName;
   int startingDay;
+  late final Year yearBelongsTo;
 
   Month(this.monthNumber, this.startingDay, {required bool isLeapYear}) {
     daysInMonth = _getDaysInMonth(monthNumber, isLeapYear);
@@ -15,6 +17,7 @@ class Month {
     _generateDays();
   }
 
+  void setYear(Year y) => yearBelongsTo = y;
 
   List<Ingredient> getMonthMealPlanIngredients(){
     List<Ingredient> ingredients = [];
@@ -44,7 +47,9 @@ class Month {
     int currentDayOfWeek = startingDay;
 
     for (int day = 1; day <= daysInMonth; day++) {
-      days.add(Day(day, currentDayOfWeek));
+      Day d = Day(day, currentDayOfWeek);
+      d.setMonth(this);
+      days.add(d);
       currentDayOfWeek = (currentDayOfWeek + 1) % 7;
     }
   }

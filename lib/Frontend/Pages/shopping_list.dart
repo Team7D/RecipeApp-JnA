@@ -1,4 +1,5 @@
-﻿import 'package:flutter/material.dart';
+﻿import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 
 import '../../Backend/Core/Meal Plan/Calendar/calendar.dart';
 import '../../Backend/Core/Meal Plan/meal_plan.dart';
@@ -15,7 +16,7 @@ class _ShoppingListPageState extends State<ShoppingListPage> {
   final TextEditingController _controller = TextEditingController();
 
   Future<void> _addItem() async {
-    //This is testing the import ingredients from mealplan - should be moved to an 'import' button
+    //This is testing the import ingredients from meal plan - should be moved to an 'import' button
     await test();
 
     if (_controller.text.isNotEmpty) {
@@ -29,18 +30,26 @@ class _ShoppingListPageState extends State<ShoppingListPage> {
   Future<void> test() async {
     Calendar c = Calendar();
 
-    List<Recipe> recipes = await retrieveAllRecipes();
-
-    c.today()?.mealPlan.setSlotRecipe(MealSlot.Dinner, recipes[0]);
-
-    List<Ingredient>? ingredients = c.thisYear()?.getYearMealPlanIngredients();
-
-    if(ingredients == null) return;
-
-    for(Ingredient i in ingredients){
-      shoppingList.add(i.toString());
-      print(i);
+    List<Map<String, dynamic>> returnData = await getUserCalendarData(FirebaseAuth.instance.currentUser!.uid);
+    for(var item in returnData){
+      await c.updateCalendar(item);
     }
+
+    List<Ingredient>? ingredients = c.thisMonth()?.getMonthMealPlanIngredients();
+
+    Map<String, List<dynamic>> ingredientValues = {};
+
+    for (Ingredient i in ingredients!) {
+      if (ingredientValues.containsKey(i.getName())) {
+        ingredientValues[i.getName()]?[0] += i.getQuantity();
+      } else {
+        ingredientValues[i.getName()] = [i.getQuantity(), i.getUnit()];
+      }
+    }
+    ingredientValues.forEach((key, value) {
+      shoppingList.add("${value[0]}${value[1]} $key");
+      print('Ingredient: $key, Quantity: ${value[0]}, Unit: ${value[1]}');
+    });
 
     setState(() {});
   }
