@@ -32,7 +32,7 @@ class _AddRecipePageState extends State<AddRecipePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Add Recipe'),
-        backgroundColor: Color(0xFFFFA559),
+        backgroundColor: Colors.red,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -90,7 +90,7 @@ class _AddRecipePageState extends State<AddRecipePage> {
                 onPressed: () {
                   // Future backend integration for saving the recipe
                 },
-                style: ElevatedButton.styleFrom(backgroundColor: Color(0xFFFFA559)),
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
                 child: Text('Save Recipe', style: TextStyle(color: Colors.white)),
               ),
             ],

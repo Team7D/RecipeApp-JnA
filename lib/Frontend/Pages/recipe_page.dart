@@ -12,7 +12,7 @@ class RecipePage extends StatelessWidget {
       backgroundColor: Color(0xFFFFF6E5),
       appBar: AppBar(
         title: Text(recipe.getTitle(), style: TextStyle(color: Color(0xFF6B4226))),
-        backgroundColor: Color(0xFFFFA559),
+        backgroundColor: Colors.red,
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16.0),
