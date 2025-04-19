@@ -6,7 +6,7 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFFFF6E5), // Light beige background
+      backgroundColor: Color(0xFFFFF6E5),
       body: Center(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 20),
@@ -26,7 +26,7 @@ class LoginPage extends StatelessWidget {
               SizedBox(height: 20),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFFFFA559), // Pastel orange
+                  backgroundColor: Colors.red,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                   padding: EdgeInsets.symmetric(vertical: 12),
                 ),

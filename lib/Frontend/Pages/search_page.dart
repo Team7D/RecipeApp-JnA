@@ -159,8 +159,8 @@ class _SearchPageState extends State<SearchPage> {
     return Scaffold(
       backgroundColor: Color(0xFFFFF6E5),
       appBar: AppBar(
-        title: Text('Search Recipes', style: TextStyle(color: Color(0xFF6B4226))),
-        backgroundColor: Color(0xFFFFA559),
+        title: Text('Search Recipes', style: TextStyle(color: Colors.black)),
+        backgroundColor: Colors.red,
       ),
       body: Padding(
         padding: const EdgeInsets.all(10.0),
@@ -182,7 +182,7 @@ class _SearchPageState extends State<SearchPage> {
               onPressed: _showFilterPopup,
               icon: Icon(Icons.filter_list),
               label: Text("Filters"),
-              style: ElevatedButton.styleFrom(backgroundColor: Color(0xFFFFA559)),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
             ),
 
             SizedBox(height: 10),

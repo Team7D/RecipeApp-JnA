@@ -56,8 +56,8 @@ class _ShoppingListPageState extends State<ShoppingListPage> {
     return Scaffold(
       backgroundColor: Color(0xFFFFF6E5),
       appBar: AppBar(
-        title: Text("Shopping List", style: TextStyle(color: Color(0xFF6B4226))),
-        backgroundColor: Color(0xFFFFA559),
+        title: Text("Shopping List", style: TextStyle(color: Colors.black)),
+        backgroundColor: Colors.red,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
@@ -71,7 +71,7 @@ class _ShoppingListPageState extends State<ShoppingListPage> {
               controller: _controller,
               decoration: InputDecoration(
                 hintText: "Add an item...",
-                prefixIcon: Icon(Icons.add_shopping_cart, color: Color(0xFFFFA559)),
+                prefixIcon: Icon(Icons.add_shopping_cart, color: Colors.red),
                 filled: true,
                 fillColor: Colors.white,
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
@@ -80,7 +80,7 @@ class _ShoppingListPageState extends State<ShoppingListPage> {
             SizedBox(height: 10),
             ElevatedButton(
               onPressed: _addItem,
-              style: ElevatedButton.styleFrom(backgroundColor: Color(0xFFFFA559)),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
               child: Text("Add to List", style: TextStyle(color: Colors.white)),
             ),
             SizedBox(height: 10),

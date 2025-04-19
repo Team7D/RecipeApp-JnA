@@ -102,7 +102,7 @@ class _MealPlanPageState extends State<MealPlanPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Meal Plan"),
-        backgroundColor: Color(0xFFFFA559),
+        backgroundColor: Colors.red,
       ),
       backgroundColor: Color(0xFFFFF6E5),
       body: Padding(

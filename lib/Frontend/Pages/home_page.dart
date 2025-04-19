@@ -1,19 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:recipe_app/Backend/Core/Meal%20Plan/meal_plan.dart';
-import 'package:recipe_app/Backend/Core/Recipe/difficulty.dart';
-import 'package:recipe_app/Backend/Core/Recipe/image_info.dart';
-import 'package:recipe_app/Backend/Core/Recipe/ingredient.dart';
-import 'package:recipe_app/Backend/Core/Recipe/rating.dart';
 import 'dart:math';
-import '../../Backend/Core/Meal Plan/Calendar/calendar.dart';
-import '../../Backend/Core/Meal Plan/Calendar/day.dart';
-import '../../Backend/Core/Recipe/time.dart';
 import 'search_page.dart';
 import 'shopping_list.dart';
 import '../../Backend/Core/Recipe/recipe.dart';
 import 'recipe_page.dart';
 import 'add_recipe_page.dart';
 import 'meal_plan_page.dart';
+import 'bookmarks_page.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -22,6 +15,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<Recipe> recipes = [];
+  int _selectedIndex = 0;
 
   @override
   void initState() {
@@ -34,19 +28,49 @@ class _HomePageState extends State<HomePage> {
     if (allRecipes.isNotEmpty) {
       allRecipes.shuffle(Random());
       setState(() {
-        recipes = allRecipes.take(5).toList();
+        recipes = allRecipes.take(10).toList();
       });
     }
   }
 
-  int _selectedIndex = 0;
-
   void _onItemTapped(int index) {
-    if (index == 1) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => SearchPage()),
-      );
+    setState(() {
+      _selectedIndex = index;
+    });
+
+    switch (index) {
+      case 0:
+        break;
+      case 1:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => SearchPage()),
+        );
+        break;
+      case 2:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => AddRecipePage()),
+        );
+        break;
+      case 3:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => ShoppingListPage()),
+        );
+        break;
+      case 4:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => MealPlanPage()),
+        );
+        break;
+      case 5:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => BookmarkedRecipesPage()),
+        );
+
     }
   }
 
@@ -61,122 +85,121 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xFFFFF6E5),
-      appBar: AppBar(
-        title: Text("Home", style: TextStyle(color: Color(0xFF6B4226))),
-        backgroundColor: Color(0xFFFFA559),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.add, color: Colors.white),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => AddRecipePage()),
-              );
-            },
-          ),
-          IconButton(
-            icon: Icon(Icons.shopping_cart, color: Colors.white),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => ShoppingListPage()),
-              );
-            },
-          ),
-          IconButton(
-            icon: Icon(Icons.search, color: Colors.white),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => SearchPage()),
-              );
-            },
-          ),
-          IconButton(
-            icon: Icon(Icons.calendar_today, color: Colors.white),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => MealPlanPage()),
-              );
-            },
-          ),
-        ],
-      ),
-      body: Expanded(
-        child: recipes.isEmpty
-            ? Center(child: CircularProgressIndicator())
-            : Padding(
-          padding: EdgeInsets.all(10.0),
-          child: ListView.builder(
-            itemCount: recipes.length,
-            itemBuilder: (context, index) {
-              return GestureDetector(
-                onTap: () => _navigateToRecipePage(recipes[index]),
-                child: Card(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15)),
-                  elevation: 4,
-                  margin: EdgeInsets.symmetric(vertical: 10),
-                  child: Stack(
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(15),
-                        child: Image.network(
-                          recipes[index].getImageUrl(),
-                          width: double.infinity,
-                          height: 180,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      Container(
-                        width: double.infinity,
-                        height: 180,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(15),
-                          gradient: LinearGradient(
-                            colors: [
-                              Colors.black.withOpacity(0.5),
-                              Colors.transparent
-                            ],
-                            begin: Alignment.bottomCenter,
-                            end: Alignment.topCenter,
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        bottom: 10,
-                        left: 15,
-                        child: Text(
-                          recipes[index].getTitle(),
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ],
-                  ),
+      body: recipes.isEmpty
+          ? Center(child: CircularProgressIndicator())
+          : Padding(
+        padding: EdgeInsets.all(10.0),
+        child: ListView.builder(
+          itemCount: recipes.length,
+          itemBuilder: (context, index) {
+            return GestureDetector(
+              onTap: () => _navigateToRecipePage(recipes[index]),
+              child: Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
                 ),
-              );
-            },
-          ),
+                elevation: 8,
+                margin: EdgeInsets.symmetric(vertical: 12),
+                child: Stack(
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: Image.network(
+                        recipes[index].getImageUrl(),
+                        width: double.infinity,
+                        height: 220,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    Container(
+                      width: double.infinity,
+                      height: 220,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        gradient: LinearGradient(
+                          colors: [
+                            Colors.black.withOpacity(0.6),
+                            Colors.transparent
+                          ],
+                          begin: Alignment.bottomCenter,
+                          end: Alignment.topCenter,
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 15,
+                      left: 15,
+                      child: Text(
+                        recipes[index].getTitle(),
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    Positioned(
+                      top: 10,
+                      right: 15,
+                      child: IconButton(
+                        icon: Icon(
+                          Icons.bookmark_border,
+                          color: Colors.white,
+                          size: 30,
+                        ),
+                        onPressed: () {
+                          //TODO Implement bookmarking functionality here
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Color(0xFFFFA559),
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.white70,
-        items: [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-          BottomNavigationBarItem(icon: Icon(Icons.search), label: "Search"),
+        bottomNavigationBar: Theme(
+        data: Theme.of(context).copyWith(
+      canvasColor: Colors.red,
+    ),
+    child: BottomNavigationBar(
+    type: BottomNavigationBarType.fixed,
+    currentIndex: _selectedIndex,
+    onTap: _onItemTapped,
+    selectedItemColor: Colors.black,
+    unselectedItemColor: Colors.black,
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.search),
+            label: 'Search',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.add),
+            label: 'Add Recipe',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.shopping_cart),
+            label: 'Shopping List',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.calendar_today),
+            label: 'Meal Plan',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.bookmark_border),
+            label: 'Bookmarks',
+          ),
         ],
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
       ),
-    );
+    ));
   }
 }
+
+
 
 
 
