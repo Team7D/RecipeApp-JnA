@@ -159,7 +159,7 @@ class _SearchPageState extends State<SearchPage> {
     return Scaffold(
       backgroundColor: Color(0xFFFFF6E5),
       appBar: AppBar(
-        title: Text('Search Recipes', style: TextStyle(color: Color(0xFF6B4226))),
+        title: Text('Search Recipes', style: TextStyle(color: Colors.black)),
         backgroundColor: Colors.red,
       ),
       body: Padding(

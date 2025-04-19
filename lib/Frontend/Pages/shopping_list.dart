@@ -56,7 +56,7 @@ class _ShoppingListPageState extends State<ShoppingListPage> {
     return Scaffold(
       backgroundColor: Color(0xFFFFF6E5),
       appBar: AppBar(
-        title: Text("Shopping List", style: TextStyle(color: Color(0xFF6B4226))),
+        title: Text("Shopping List", style: TextStyle(color: Colors.black)),
         backgroundColor: Colors.red,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white),
