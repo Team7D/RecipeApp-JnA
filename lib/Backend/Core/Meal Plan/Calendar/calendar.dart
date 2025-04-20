@@ -1,4 +1,7 @@
-﻿import 'year.dart';
+﻿import 'package:cloud_firestore/cloud_firestore.dart';
+import '../../Recipe/recipe.dart';
+import '../meal_plan.dart';
+import 'year.dart';
 import 'day.dart';
 import 'month.dart';
 
@@ -142,4 +145,116 @@ class Calendar {
   void displayDayFromMonth({required Month month, required int dayNumber}){
     month.displayDay(dayNumber);
   }
+
+  Map<String, Recipe> recipeCache = {};
+  Future<void> updateCalendar(Map<String, dynamic> map) async {
+    String date = map['date'];
+    String recipeID = map['recipeID'];
+
+    Recipe? recipe;
+
+    if (recipeCache.containsKey(recipeID)) {
+      recipe = recipeCache[recipeID]!;
+    } else {
+      recipe = await retrieveRecipe(recipeID);
+      recipeCache[recipeID] = recipe!;
+    }
+
+    print(recipeCache);
+
+    List<String> dateData = date.split(" ");
+    int day = int.parse(dateData[0]);
+    int month = int.parse(dateData[1]);
+    int year = int.parse(dateData[2]);
+
+    Day? selectedDay = this.getDayInMonthInYear(year, month, day);
+
+    selectedDay?.mealPlan.setSlotRecipe(MealSlot.Breakfast, recipe);
+  }
 }
+
+Future<List<Map<String, dynamic>>> getUserCalendarData(String userID) async {
+  List<Map<String, dynamic>> returnData = [];
+
+  try {
+    CollectionReference userCalendar = FirebaseFirestore.instance.collection('userCalendars');
+
+    DocumentSnapshot userData = await userCalendar.doc(userID).get();
+
+    if (userData.exists) {
+      Map<String, dynamic> data = userData.data() as Map<String, dynamic>;
+
+      List<dynamic> events = data['events'];
+
+      for (var event in events) {
+        returnData.add({
+          'date': event['date'],
+          'recipeID': event['recipeID'],
+        });
+      }
+    }
+
+  } catch (e) {
+    print("Error getting calendar data: $e");
+  }
+
+  return returnData;
+}
+
+Future<void> addOrOverwriteEventToUserCalendar(String userID, String date, String recipeID) async {
+  try {
+    CollectionReference userCalendar = FirebaseFirestore.instance.collection('userCalendars');
+
+    DocumentReference userDoc = userCalendar.doc(userID);
+
+    DocumentSnapshot userData = await userDoc.get();
+
+    if (userData.exists) {
+      Map<String, dynamic> data = userData.data() as Map<String, dynamic>;
+      List<dynamic> events = data['events'] ?? [];
+
+      // Check if an event with the same date already exists
+      bool eventUpdated = false;
+      for (var event in events) {
+        if (event['date'] == date) {
+          // Overwrite the event with the new recipeID for the existing date
+          event['recipeID'] = recipeID;
+          eventUpdated = true;
+          break;
+        }
+      }
+
+      // If no event with the same date was found, add the new event
+      if (!eventUpdated) {
+        events.add({
+          'date': date,
+          'recipeID': recipeID,
+        });
+      }
+
+      // Update the 'events' field with the updated list
+      await userDoc.update({
+        'events': events,
+      });
+      print("Event added/overwritten successfully!");
+    } else {
+      // If the document doesn't exist, create it with the new event
+      await userDoc.set({
+        'events': [
+          {
+            'date': date,
+            'recipeID': recipeID,
+          },
+        ],
+      });
+      print("Event added successfully!");
+    }
+  } catch (e) {
+    print("Error adding/overwriting event: $e");
+  }
+}
+
+
+
+
+
