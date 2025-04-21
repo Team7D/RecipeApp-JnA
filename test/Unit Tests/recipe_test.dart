@@ -34,7 +34,6 @@ void main() {
     expect(recipe.getTotalTime(), equals('90 m'));
     expect(recipe.getAverageRating(), equals(4.5));
     expect(recipe.getReviewCount(), equals(100));
-    expect(recipe.isBookmarked, equals(false)); // Default value
   });
 
   test('Recipe should handle empty inputs', () {

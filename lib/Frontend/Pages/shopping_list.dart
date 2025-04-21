@@ -16,9 +16,6 @@ class _ShoppingListPageState extends State<ShoppingListPage> {
   final TextEditingController _controller = TextEditingController();
 
   Future<void> _addItem() async {
-    //This is testing the import ingredients from meal plan - should be moved to an 'import' button
-    await test();
-
     if (_controller.text.isNotEmpty) {
       setState(() {
         shoppingList.add(_controller.text);
@@ -27,7 +24,7 @@ class _ShoppingListPageState extends State<ShoppingListPage> {
     }
   }
 
-  Future<void> test() async {
+  Future<void> importFromMealPlan() async {
     Calendar c = Calendar();
 
     List<Map<String, dynamic>> returnData = await getUserCalendarData(FirebaseAuth.instance.currentUser!.uid);
@@ -91,6 +88,12 @@ class _ShoppingListPageState extends State<ShoppingListPage> {
               onPressed: _addItem,
               style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
               child: Text("Add to List", style: TextStyle(color: Colors.white)),
+            ),
+            SizedBox(height: 5),
+            ElevatedButton(
+              onPressed: importFromMealPlan,
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+              child: Text("Import from Meal Plan", style: TextStyle(color: Colors.white)),
             ),
             SizedBox(height: 10),
             Expanded(

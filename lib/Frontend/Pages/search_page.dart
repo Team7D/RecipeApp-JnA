@@ -133,7 +133,6 @@ class _SearchPageState extends State<SearchPage> {
                     ),
                   ),
 
-                  // Show selected ingredients as chips
                   Wrap(
                     children: _selectedIngredients.map((ingredient) => Chip(
                       label: Text(ingredient),
@@ -181,8 +180,7 @@ class _SearchPageState extends State<SearchPage> {
             ElevatedButton.icon(
               onPressed: _showFilterPopup,
               icon: Icon(Icons.filter_list),
-              label: Text("Filters"),
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+              label: Text("Filters", selectionColor: Colors.black),
             ),
 
             SizedBox(height: 10),

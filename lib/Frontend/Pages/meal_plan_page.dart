@@ -25,9 +25,9 @@ class _MealPlanPageState extends State<MealPlanPage> {
 
 
   Future<void> fetchRecipes() async {
-    List<Recipe> allRecipes = await retrieveAllRecipes();
+    List<Recipe> bookmarkedRecipes = await getUserBookmarkedRecipes();
     setState(() {
-      recipes = allRecipes;
+      recipes = bookmarkedRecipes;
     });
   }
 
@@ -74,7 +74,7 @@ class _MealPlanPageState extends State<MealPlanPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Select a Recipe"),
+          title: Text("Select a Recipe from your Bookmarks"),
           content: Container(
             height: 200,
             width: double.maxFinite,
@@ -116,7 +116,7 @@ class _MealPlanPageState extends State<MealPlanPage> {
         return GestureDetector(
           onTap: () => _selectRecipeForDay(thisDay!),
           child: Card(
-            color: Colors.white,
+            color: index == DateTime.now().day - 1 ? Colors.red : Colors.white,
             margin: EdgeInsets.all(4),
             child: Column(
               children: [

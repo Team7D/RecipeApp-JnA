@@ -160,7 +160,7 @@ class Calendar {
       recipeCache[recipeID] = recipe!;
     }
 
-    print(recipeCache);
+    //print(recipeCache);
 
     List<String> dateData = date.split(" ");
     int day = int.parse(dateData[0]);
