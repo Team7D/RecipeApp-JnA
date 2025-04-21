@@ -1,4 +1,5 @@
 ﻿import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'rating.dart';
 import 'time.dart';
 import 'difficulty.dart';
@@ -15,9 +16,9 @@ class Recipe {
   final Time _duration;
   final Rating _rating;
   final Difficulty _difficulty;
-  bool isBookmarked;
+  late final List<TAGS> tags;
 
-  Recipe(this._id, this._title, this._image, this._ingredients, this._instructions, this._duration, this._rating, this._difficulty, {this.isBookmarked = false,});
+  Recipe(this._id, this._title, this._image, this._ingredients, this._instructions, this._duration, this._rating, this._difficulty);
 
   String getID() => _id;
   String getTitle() => _title;
@@ -110,7 +111,6 @@ class Recipe {
       return false; // If the rating is less than
     }
 
-    //TODO: Ingredient check
     for(Ingredient i in filter.ingredients){
       if(!hasIngredient(i)){
         return false;
@@ -331,6 +331,112 @@ Future<List<Recipe>> getAllRecipesWithFilter(Filter filter) async {
   return filteredRecipes;
 }
 
+
+Future<bool> bookmarkRecipe(String recipeID) async {
+  try {
+    CollectionReference userCalendar = FirebaseFirestore.instance.collection('userBookmarks');
+
+    DocumentReference userDoc = userCalendar.doc(FirebaseAuth.instance.currentUser?.uid);
+
+    DocumentSnapshot userData = await userDoc.get();
+
+    if (userData.exists) {
+      Map<String, dynamic> data = userData.data() as Map<String, dynamic>;
+      List<dynamic> bookmarks = data['bookmarks'] ?? [];
+
+      // Check if the recipe is already bookmarked and if so unbookmark it
+      bool flag = false;
+      for (var bookmark in bookmarks) {
+        if (bookmark['recipeID'] == recipeID) {
+          bookmarks.remove(bookmark);
+          print("Un-Bookmarked recipe successfully!");
+          flag = true;
+        }
+      }
+
+      if(!flag){
+        bookmarks.add({
+          'recipeID': recipeID,
+        });
+        print("Bookmarked recipe successfully!");
+      }
+
+      // Update the 'bookmarks' field with the updated list
+      await userDoc.update({
+        'bookmarks': bookmarks,
+      });
+    } else {
+      // If the document doesn't exist, create it with the new event
+      await userDoc.set({
+        'bookmarks': [
+          {
+            'recipeID': recipeID,
+          },
+        ],
+      });
+      print("Bookmarked successfully!");
+      return true;
+    }
+  } catch (e) {
+    print("Error bookmarking recipe: $e");
+  }
+  return false;
+}
+
+Future<List<String>> getUserBookmarkedRecipesIDs() async {
+  List<String> returnData = [];
+
+  try {
+    CollectionReference userCalendar = FirebaseFirestore.instance.collection('userBookmarks');
+
+    String? userID = FirebaseAuth.instance.currentUser?.uid;
+    DocumentSnapshot userData = await userCalendar.doc(userID).get();
+
+    if (userData.exists) {
+      Map<String, dynamic> data = userData.data() as Map<String, dynamic>;
+
+      List<dynamic> bookmarks = data['bookmarks'];
+
+      for (var bookmark in bookmarks) {
+        returnData.add(bookmark['recipeID']);
+      }
+    }
+
+  } catch (e) {
+    print("Error getting bookmark data: $e");
+  }
+  return returnData;
+}
+
+Future<List<Recipe>> getUserBookmarkedRecipes() async {
+  List<Recipe> returnData = [];
+
+  try {
+    CollectionReference userCalendar = FirebaseFirestore.instance.collection('userBookmarks');
+
+    String? userID = FirebaseAuth.instance.currentUser?.uid;
+    DocumentSnapshot userData = await userCalendar.doc(userID).get();
+
+    if (userData.exists) {
+      Map<String, dynamic> data = userData.data() as Map<String, dynamic>;
+
+      List<dynamic> bookmarks = data['bookmarks'];
+
+      for (var bookmark in bookmarks) {
+        Recipe? r = await retrieveRecipe(bookmark['recipeID']);
+
+        if(r != null){
+          returnData.add(r);
+        }
+      }
+    }
+
+  } catch (e) {
+    print("Error getting bookmark data: $e");
+  }
+  return returnData;
+}
+
 class Filter{
   late String? title;
   late List<Ingredient> ingredients;
@@ -368,5 +474,35 @@ class Filter{
 
     return true;
   }
+}
+
+enum TAGS{
+  Breakfast,
+  Lunch,
+  Dinner,
+  Dessert,
+  Snack,
+  Vegan,
+  Vegetarian,
+  HighProtein,
+  Healthy,
+  LowCarb,
+  Appetizer,
+  MainCourse,
+  SideDish,
+  Salad,
+
+  // Cuisine Types
+  Italian,
+  Chinese,
+  Indian,
+  Mexican,
+  American,
+
+  // Special Tags
+  Quick,
+  Easy,
+  FamilyFriendly,
+  BudgetFriendly,
 }
 

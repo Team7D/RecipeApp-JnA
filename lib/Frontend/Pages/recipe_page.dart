@@ -17,7 +17,7 @@ class RecipePage extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.bookmark_border, color: Colors.black),
             onPressed: () {
-              // Bookmark functionality placeholder
+              bookmarkRecipe(recipe.getID());
             },
           ),
         ],

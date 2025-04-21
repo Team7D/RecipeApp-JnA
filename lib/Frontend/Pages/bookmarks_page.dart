@@ -1,4 +1,5 @@
 ﻿import 'package:flutter/material.dart';
+import 'package:recipe_app/Backend/Core/Recipe/recipe.dart';
 
 class BookmarkedRecipesPage extends StatefulWidget {
   @override
@@ -6,12 +7,27 @@ class BookmarkedRecipesPage extends StatefulWidget {
 }
 
 class _BookmarkedRecipesPageState extends State<BookmarkedRecipesPage> {
-  // Placeholder recipes
-  final List<String> _bookmarkedTitles = [
-    'Spaghetti Bolognese',
-    'Chicken Curry',
-    'Stir Fry',
-  ];
+  List<Recipe> _bookmarked = [];
+
+  @override
+  void initState() {
+    super.initState();
+
+    populateBookmarks();
+  }
+
+
+  Future<void> populateBookmarks() async{
+    _bookmarked = await getUserBookmarkedRecipes();
+
+    setState(() {});
+  }
+
+  Future<void> unbookmark(int index) async{
+    bookmarkRecipe(_bookmarked[index].getID());
+    _bookmarked.removeAt(index);
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +38,7 @@ class _BookmarkedRecipesPageState extends State<BookmarkedRecipesPage> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: _bookmarkedTitles.isEmpty
+        child: _bookmarked.isEmpty
             ? Center(
           child: Text(
             'No bookmarks yet.',
@@ -30,7 +46,7 @@ class _BookmarkedRecipesPageState extends State<BookmarkedRecipesPage> {
           ),
         )
             : ListView.builder(
-          itemCount: _bookmarkedTitles.length,
+          itemCount: _bookmarked.length,
           itemBuilder: (context, index) {
             return Card(
               shape: RoundedRectangleBorder(
@@ -41,7 +57,7 @@ class _BookmarkedRecipesPageState extends State<BookmarkedRecipesPage> {
               child: ListTile(
                 contentPadding: EdgeInsets.all(16),
                 title: Text(
-                  _bookmarkedTitles[index],
+                  _bookmarked[index].getTitle(),
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -49,7 +65,7 @@ class _BookmarkedRecipesPageState extends State<BookmarkedRecipesPage> {
                 ),
                 trailing: Icon(Icons.bookmark, color: Colors.red),
                 onTap: () {
-
+                  unbookmark(index);
                 },
               ),
             );
