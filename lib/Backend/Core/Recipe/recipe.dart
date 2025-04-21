@@ -16,9 +16,9 @@ class Recipe {
   final Time _duration;
   final Rating _rating;
   final Difficulty _difficulty;
-  late final List<TAGS> tags;
+  final List<TAGS> _tags;
 
-  Recipe(this._id, this._title, this._image, this._ingredients, this._instructions, this._duration, this._rating, this._difficulty);
+  Recipe(this._id, this._title, this._image, this._ingredients, this._instructions, this._duration, this._rating, this._difficulty, this._tags);
 
   String getID() => _id;
   String getTitle() => _title;
@@ -43,6 +43,14 @@ class Recipe {
       case Level.None:
         return "Any";
     }
+  }
+  List<TAGS> getTags() => _tags;
+
+  bool hasTag(TAGS tag){
+    if(this._tags.contains(tag)){
+      return true;
+    }
+    return false;
   }
 
   String displayMacros(){
@@ -141,6 +149,7 @@ Recipe? createRecipe({required String recipeTitle, required String recipeThumbna
     Time duration = Time(recipePrepTime, recipeCookTime);
     Rating rating = Rating(0, 0);
     Difficulty difficulty = Difficulty(level: recipeDifficulty);
+    List<TAGS> tags = [];
     Recipe newRecipe = Recipe(
         "temporary ID",
         recipeTitle,
@@ -149,7 +158,9 @@ Recipe? createRecipe({required String recipeTitle, required String recipeThumbna
         instructions,
         duration,
         rating,
-        difficulty);
+        difficulty,
+        tags
+    );
 
     print("Recipe Creation Successful");
     return newRecipe;
@@ -184,6 +195,7 @@ Future<void> uploadRecipe(Recipe recipe) async {
         'averageRating': recipe.getAverageRating(),
         'reviewCount': recipe.getReviewCount(),
       },
+      'tags': recipe.getTags(),
     };
 
     await recipesRef.add(recipeData);
@@ -216,6 +228,13 @@ Future<Recipe?> retrieveRecipe(String recipeId) async {
         );
       }).toList();
 
+      List<dynamic> tagStrings = data['tags'];
+      List<TAGS> tags = [];
+
+      for(var s in tagStrings){
+        tags.add(tagFromString(s.toString()));
+      }
+
       return Recipe(
         recipeDoc.id,
         data['title'],
@@ -231,6 +250,7 @@ Future<Recipe?> retrieveRecipe(String recipeId) async {
           data['rating']['reviewCount'],
         ),
         Difficulty(level: data['difficulty']),
+        tags,
       );
     } else {
       print('Recipe not found');
@@ -267,6 +287,13 @@ Future<List<Recipe>> retrieveAllRecipes() async {
         );
       }).toList();
 
+      List<dynamic> tagStrings = data['tags'];
+      List<TAGS> tags = [];
+
+      for(var s in tagStrings){
+        tags.add(tagFromString(s.toString()));
+      }
+
       return Recipe(
         recipeDoc.id,
         data['title'],
@@ -282,6 +309,7 @@ Future<List<Recipe>> retrieveAllRecipes() async {
           data['rating']['reviewCount'],
         ),
         Difficulty(level: data['difficulty']),
+        tags,
       );
     }).toList();
 
@@ -498,6 +526,7 @@ enum TAGS{
   Indian,
   Mexican,
   American,
+  Thai,
 
   // Special Tags
   Quick,
@@ -505,4 +534,68 @@ enum TAGS{
   FamilyFriendly,
   BudgetFriendly,
 }
+
+TAGS tagFromString(String tag) {
+  switch (tag) {
+    case 'Breakfast':
+      return TAGS.Breakfast;
+    case 'Lunch':
+      return TAGS.Lunch;
+    case 'Dinner':
+      return TAGS.Dinner;
+    case 'Dessert':
+      return TAGS.Dessert;
+    case 'Snack':
+      return TAGS.Snack;
+    case 'Vegan':
+      return TAGS.Vegan;
+    case 'Vegetarian':
+      return TAGS.Vegetarian;
+    case 'High Protein':
+      return TAGS.HighProtein;
+    case 'Healthy':
+      return TAGS.Healthy;
+    case 'Low Carb':
+      return TAGS.LowCarb;
+    case 'Appetizer':
+      return TAGS.Appetizer;
+    case 'Main Course':
+      return TAGS.MainCourse;
+    case 'Side Dish':
+      return TAGS.SideDish;
+    case 'Salad':
+      return TAGS.Salad;
+
+  // Cuisine Types
+    case 'Italian':
+      return TAGS.Italian;
+    case 'Chinese':
+      return TAGS.Chinese;
+    case 'Indian':
+      return TAGS.Indian;
+    case 'Mexican':
+      return TAGS.Mexican;
+    case 'American':
+      return TAGS.American;
+    case 'Thai':
+      return TAGS.Thai;
+
+  // Special Tags
+    case 'Quick':
+      return TAGS.Quick;
+    case 'Easy':
+      return TAGS.Easy;
+    case 'Family Friendly':
+      return TAGS.FamilyFriendly;
+    case 'Budget Friendly':
+      return TAGS.BudgetFriendly;
+    default:
+      throw ArgumentError('Invalid tag: $tag');
+  }
+}
+
+String tagToString(TAGS tag) {
+  return tag.toString().split('.').last.toLowerCase();
+}
+
 

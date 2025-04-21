@@ -100,19 +100,24 @@ class _MealPlanPageState extends State<MealPlanPage> {
   Widget _buildCalendar() {
     //Get this current month
     Month? thisMonth = calendar.thisMonth();
-    if(thisMonth != null){
-      //Then build the calendar with the days of this month
-      //thisMonth.display();
-    }
+
+    int startingIndex = DateTime.now().day - 1;
+
     return GridView.builder(
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 7,
         childAspectRatio: 1.0,
       ),
-      itemCount: thisMonth?.days.length,
+      itemCount: 30,
       itemBuilder: (context, index) {
-        //Get the first day of this month
-        Day? thisDay = thisMonth?.days[index];
+        //Get today on this month
+        Day? thisDay = thisMonth?.days[index + startingIndex];
+        if(index + startingIndex == 30){
+          thisMonth = calendar.nextMonth();
+          startingIndex = 0;
+          index = 0;
+        }
+        thisDay = thisMonth?.days[index + startingIndex];
         return GestureDetector(
           onTap: () => _selectRecipeForDay(thisDay!),
           child: Card(
@@ -121,11 +126,11 @@ class _MealPlanPageState extends State<MealPlanPage> {
             child: Column(
               children: [
                 Text(
-                  thisMonth!.days[index].dayNumber.toString(),
+                  thisMonth!.days[index + startingIndex].dayNumber.toString(),
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 Text(
-                  getDayOfWeek(thisMonth.days[index].dayOfWeek),
+                  getDayOfWeek(thisMonth!.days[index + startingIndex].dayOfWeek),
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 if (thisDay!.mealPlan.getRecipeAtSlot(slot: MealSlot.Breakfast) != null)

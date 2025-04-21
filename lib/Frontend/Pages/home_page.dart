@@ -32,7 +32,7 @@ class _HomePageState extends State<HomePage> {
     if (allRecipes.isNotEmpty) {
       allRecipes.shuffle(Random());
       setState(() {
-        recipes = allRecipes.take(9).toList();
+        recipes = allRecipes;
       });
     }
   }
@@ -87,13 +87,13 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   _buildRecipeRow("🍽️ Today's Picks", recipes), //.where((r) => r.category == 'Todays Picks').toList()),
                   const SizedBox(height: 24),
-                  _buildRecipeRow("🍳 Breakfast", recipes), //.where((r) => r.category == 'Breakfast').toList()),
+                  _buildRecipeRow("🍳 Breakfast", recipes.where((r) => r.hasTag(TAGS.Breakfast)).toList()),
                   const SizedBox(height: 24),
-                  _buildRecipeRow("🥗 Lunch", recipes), //.where((r) => r.category == 'Lunch').toList()),
+                  _buildRecipeRow("🥗 Lunch", recipes.where((r) => r.hasTag(TAGS.Lunch)).toList()),
                   const SizedBox(height: 24),
-                  _buildRecipeRow("🍽️ Dinner", recipes), //.where((r) => r.category == 'Dinner').toList()),
+                  _buildRecipeRow("🍽️ Dinner", recipes.where((r) => r.hasTag(TAGS.Dinner)).toList()),
                   const SizedBox(height: 24),
-                  _buildRecipeRow("🍰 Desserts", recipes), //.where((r) => r.category == 'Dessert').toList()),
+                  _buildRecipeRow("🍰 Desserts", recipes.where((r) => r.hasTag(TAGS.Dessert)).toList()),
                 ],
               ),
             ],
@@ -134,14 +134,14 @@ class _HomePageState extends State<HomePage> {
           height: 160,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
-            itemCount: recipeList.length,
+            itemCount: recipeList.length > 5 ? 5 : recipeList.length,  // Limit the items to 5
             separatorBuilder: (_, __) => const SizedBox(width: 14),
             itemBuilder: (context, index) {
               final recipe = recipeList[index];
               return GestureDetector(
                 onTap: () => _navigateToRecipePage(recipe),
                 child: Container(
-                  width: 140,
+                  width: 170,
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(12),
