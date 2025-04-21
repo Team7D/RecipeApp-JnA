@@ -74,14 +74,23 @@ class _MealPlanPageState extends State<MealPlanPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Select a Recipe from your Bookmarks"),
-          content: Container(
+          title: const Text("Select a Recipe from your Bookmarks"),
+          content: SizedBox(
             height: 200,
             width: double.maxFinite,
             child: ListView.builder(
-              itemCount: recipes.length,
+              itemCount: recipes.length + 1, // +1 for "None"
               itemBuilder: (context, index) {
-                Recipe recipe = recipes[index];
+                if (index == 0) {
+                  return ListTile(
+                    title: const Text("None"),
+                    onTap: () {
+                      Navigator.of(context).pop(null); // Return null for "None"
+                    },
+                  );
+                }
+
+                final recipe = recipes[index - 1]; // Adjust index for list
                 return ListTile(
                   title: Text(recipe.getTitle()),
                   onTap: () {
@@ -97,44 +106,74 @@ class _MealPlanPageState extends State<MealPlanPage> {
   }
 
 
-  Widget _buildCalendar() {
-    //Get this current month
-    Month? thisMonth = calendar.thisMonth();
 
-    int startingIndex = DateTime.now().day - 1;
+  Widget _buildCalendar() {
+
+    // Get today
+    DateTime today = DateTime.now();
+
+    // Start from current month
+    Month? currentMonth = calendar.thisMonth();
+    int dayIndex = today.day - 1;
+
+    // Gather 30 days across months
+    List<Day> upcomingDays = [];
+
+    while (upcomingDays.length < 30) {
+      List<Day>? daysInMonth = currentMonth?.days;
+
+      while (dayIndex < daysInMonth!.length && upcomingDays.length < 30) {
+        upcomingDays.add(daysInMonth[dayIndex]);
+        dayIndex++;
+      }
+
+      // Move to next month if needed
+      if (upcomingDays.length < 30) {
+        currentMonth = calendar.nextMonth();
+        dayIndex = 0;
+      }
+    }
 
     return GridView.builder(
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 7,
         childAspectRatio: 1.0,
       ),
-      itemCount: 30,
+      itemCount: upcomingDays.length,
       itemBuilder: (context, index) {
-        //Get today on this month
-        Day? thisDay = thisMonth?.days[index + startingIndex];
-        if(index + startingIndex == 30){
-          thisMonth = calendar.nextMonth();
-          startingIndex = 0;
-          index = 0;
-        }
-        thisDay = thisMonth?.days[index + startingIndex];
+        final thisDay = upcomingDays[index];
+        final isToday = thisDay == today.day &&
+            thisDay.monthBelongsTo == today.month &&
+            thisDay.monthBelongsTo.yearBelongsTo == today.year;
+
+        final recipe = thisDay.mealPlan.getRecipeAtSlot(slot: MealSlot.Breakfast);
+
         return GestureDetector(
-          onTap: () => _selectRecipeForDay(thisDay!),
+          onTap: () => _selectRecipeForDay(thisDay),
           child: Card(
-            color: index == DateTime.now().day - 1 ? Colors.red : Colors.white,
-            margin: EdgeInsets.all(4),
+            color: isToday ? Colors.red : Colors.white,
+            margin: const EdgeInsets.all(4),
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  thisMonth!.days[index + startingIndex].dayNumber.toString(),
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  thisDay.dayNumber.toString(),
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 Text(
-                  getDayOfWeek(thisMonth!.days[index + startingIndex].dayOfWeek),
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  getDayOfWeek(thisDay.dayOfWeek),
+                  style: const TextStyle(fontSize: 14),
                 ),
-                if (thisDay!.mealPlan.getRecipeAtSlot(slot: MealSlot.Breakfast) != null)
-                  Text(thisDay.mealPlan.getRecipeAtSlot(slot: MealSlot.Breakfast)!.getTitle(), style: TextStyle(fontSize: 16)),
+                if (recipe != null)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                    child: Text(
+                      recipe.getTitle(),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(fontSize: 12),
+                    ),
+                  ),
               ],
             ),
           ),
