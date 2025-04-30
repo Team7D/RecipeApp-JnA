@@ -33,6 +33,12 @@ class Calendar {
     return getMonthInYear(today.year, today.month);
   }
 
+  Month? nextMonth(){
+    DateTime today = DateTime.now();
+
+    return getMonthInYear(today.year, today.month + 1);
+  }
+
   ///Returns the calendar year corresponding to today (real time)
   Year? thisYear(){
     DateTime today = DateTime.now();
