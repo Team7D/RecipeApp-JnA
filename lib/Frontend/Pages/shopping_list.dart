@@ -6,13 +6,14 @@ import '../../Backend/Core/Meal Plan/meal_plan.dart';
 import '../../Backend/Core/Recipe/ingredient.dart';
 import '../../Backend/Core/Recipe/recipe.dart';
 
+List<String> shoppingList = [];
+
 class ShoppingListPage extends StatefulWidget {
   @override
   _ShoppingListPageState createState() => _ShoppingListPageState();
 }
 
 class _ShoppingListPageState extends State<ShoppingListPage> {
-  List<String> shoppingList = [];
   final TextEditingController _controller = TextEditingController();
 
   Future<void> _addItem() async {

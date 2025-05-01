@@ -8,6 +8,7 @@ import 'ingredient.dart';
 import 'instruction.dart';
 
 class Recipe {
+  final String _authorID;
   late final String _id;
   final String _title;
   final RecipeImageInfo _image;
@@ -18,7 +19,7 @@ class Recipe {
   final Difficulty _difficulty;
   final List<TAGS> _tags;
 
-  Recipe(this._id, this._title, this._image, this._ingredients, this._instructions, this._duration, this._rating, this._difficulty, this._tags);
+  Recipe(this._id, this._title, this._image, this._ingredients, this._instructions, this._duration, this._rating, this._difficulty, this._tags, this._authorID);
 
   String getID() => _id;
   String getTitle() => _title;
@@ -31,6 +32,7 @@ class Recipe {
   String getTotalTime() => _duration.getTotalTime();
   double getAverageRating() => _rating.getAverageRating();
   int getReviewCount() => _rating.getReviewCount();
+  String getAuthorID() => _authorID;
   String getDifficulty(){
     Level l =  _difficulty.getLevel();
     switch(l){
@@ -131,7 +133,7 @@ class Recipe {
 
 
 ///Returns a newly created recipe with the provided inputs. Recipe ingredients needs to be in format [Ingredient] , [Amount]. Recipe ingredient units is a List of Strings corresponding to each ingredient. Instructions is a Map of [StepNumber] , [Instruction]
-Recipe? createRecipe({required String recipeTitle, required String recipeThumbnailLink, required Map<String, int> recipeIngredients, required List<String> recipeIngredientUnits, required Map<int, String> recipeInstructions, required String recipePrepTime, required String recipeCookTime, required String recipeDifficulty}){
+Recipe? createRecipe({required String recipeTitle, required String recipeThumbnailLink, required Map<String, int> recipeIngredients, required List<String> recipeIngredientUnits, required Map<int, String> recipeInstructions, required String recipePrepTime, required String recipeCookTime, required String recipeDifficulty, required String authorID}){
   try {
     RecipeImageInfo imageInfo = RecipeImageInfo(
         recipeThumbnailLink, "Image of a : ${recipeTitle}");
@@ -159,7 +161,8 @@ Recipe? createRecipe({required String recipeTitle, required String recipeThumbna
         duration,
         rating,
         difficulty,
-        tags
+        tags,
+        authorID
     );
 
     print("Recipe Creation Successful");
@@ -176,13 +179,14 @@ Future<void> uploadRecipe(Recipe recipe) async {
     CollectionReference recipesRef = FirebaseFirestore.instance.collection('recipes');
 
     Map<String, dynamic> recipeData = {
+      'authorID': recipe.getAuthorID(),
       'title': recipe.getTitle(),
       'imageUrl': recipe.getImageUrl(),
       'ingredients': recipe.getIngredients().map((ingredient) {
         return {
           'name': ingredient.getName(),
           'quantity': ingredient.getQuantity(),
-          'unit': ingredient.getMeasurement().toString(),
+          'unit': ingredient.getUnit()
         };
       }).toList(),
       'instructions': recipe.getInstructions().map((instruction) {
@@ -251,6 +255,7 @@ Future<Recipe?> retrieveRecipe(String recipeId) async {
         ),
         Difficulty(level: data['difficulty']),
         tags,
+        data['authorID']
       );
     } else {
       print('Recipe not found');
@@ -310,6 +315,7 @@ Future<List<Recipe>> retrieveAllRecipes() async {
         ),
         Difficulty(level: data['difficulty']),
         tags,
+        data['authorID']
       );
     }).toList();
 

@@ -44,7 +44,7 @@ class _HomePageState extends State<HomePage> {
         Navigator.push(context, MaterialPageRoute(builder: (_) => SearchPage()));
         break;
       case 2:
-        Navigator.push(context, MaterialPageRoute(builder: (_) => AddRecipePage()));
+        Navigator.push(context, MaterialPageRoute(builder: (_) => CreateRecipePage()));
         break;
       case 3:
         Navigator.push(context, MaterialPageRoute(builder: (_) => ShoppingListPage()));
