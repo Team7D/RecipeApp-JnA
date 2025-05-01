@@ -4,7 +4,6 @@ class Ingredient {
   final String _name;
   final int _quantity;
   final String _unit;
-  late final Measurement _measurement;
   late final Macros? _macros;
 
   Ingredient(this._name, this._quantity, this._unit) {
@@ -22,7 +21,6 @@ class Ingredient {
 
   String getUnit() => _unit;
 
-  Measurement getMeasurement() => _measurement;
 
   void displayMacros(){
     if(_macros == null) return;
@@ -74,18 +72,6 @@ class Ingredient {
     }
   }
 
-}
-
-class Measurement<T> {
-  final double value;
-  final T unit;
-
-  Measurement({required this.value, required this.unit});
-
-  @override
-  String toString(){
-    return value.toString() + unit.toString().split('.').last;
-  }
 }
 
 

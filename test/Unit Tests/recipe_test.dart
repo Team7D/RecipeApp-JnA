@@ -19,6 +19,7 @@ void main() {
       Rating(4.5, 100),
       Difficulty(level: 'Easy'),
       [],
+      ''
     );
 
     // Test the values initialized in the constructor
@@ -48,6 +49,7 @@ void main() {
       Rating(0, 0),
       Difficulty(level: 'Any'),
       [],
+      ''
     );
 
     expect(recipe.getIngredients().isEmpty, equals(true));
