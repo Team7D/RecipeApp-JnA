@@ -1,4 +1,6 @@
-﻿import 'package:flutter/material.dart';
+﻿import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:recipe_app/Backend/Core/Recipe/recipe.dart';
 
 class BookmarkedRecipesPage extends StatefulWidget {
@@ -24,7 +26,8 @@ class _BookmarkedRecipesPageState extends State<BookmarkedRecipesPage> {
   }
 
   Future<void> unbookmark(int index) async{
-    bookmarkRecipe(_bookmarked[index].getID());
+    bookmarkRecipe(recipeID: _bookmarked[index].getID(), firestore: FirebaseFirestore.instance,
+      auth: FirebaseAuth.instance);
     _bookmarked.removeAt(index);
     setState(() {});
   }

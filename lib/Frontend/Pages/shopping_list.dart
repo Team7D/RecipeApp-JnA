@@ -1,4 +1,5 @@
-﻿import 'package:firebase_auth/firebase_auth.dart';
+﻿import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../Backend/Core/Meal Plan/Calendar/calendar.dart';
@@ -28,7 +29,7 @@ class _ShoppingListPageState extends State<ShoppingListPage> {
   Future<void> importFromMealPlan() async {
     Calendar c = Calendar();
 
-    List<Map<String, dynamic>> returnData = await getUserCalendarData(FirebaseAuth.instance.currentUser!.uid);
+    List<Map<String, dynamic>> returnData = await getUserCalendarData(FirebaseAuth.instance.currentUser!.uid, firestore: FirebaseFirestore.instance);
     for(var item in returnData){
       await c.updateCalendar(item);
     }

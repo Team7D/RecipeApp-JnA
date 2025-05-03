@@ -1,4 +1,5 @@
-﻿import 'package:firebase_auth/firebase_auth.dart';
+﻿import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:recipe_app/Backend/Core/Meal%20Plan/meal_plan.dart';
 import 'package:recipe_app/Backend/Core/Recipe/recipe.dart';
@@ -33,7 +34,7 @@ class _MealPlanPageState extends State<MealPlanPage> {
 
   Future<void> fetchUserCalendarData() async {
     try {
-      List<Map<String, dynamic>> returnData = await getUserCalendarData(FirebaseAuth.instance.currentUser!.uid);
+      List<Map<String, dynamic>> returnData = await getUserCalendarData(FirebaseAuth.instance.currentUser!.uid, firestore: FirebaseFirestore.instance);
 
       List<Future<void>> updateFutures = [];
 
@@ -54,7 +55,13 @@ class _MealPlanPageState extends State<MealPlanPage> {
     selectedDay.monthBelongsTo.monthNumber.toString() + " " +
     selectedDay.monthBelongsTo.yearBelongsTo.year.toString();
 
-    addOrOverwriteEventToUserCalendar(FirebaseAuth.instance.currentUser!.uid, date, recipeID);
+    await addOrOverwriteEventToUserCalendar(
+      FirebaseAuth.instance.currentUser!.uid,
+      date,
+      recipeID,
+      firestore: FirebaseFirestore.instance,
+    );
+
   }
 
 
