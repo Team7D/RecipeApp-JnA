@@ -19,7 +19,11 @@ class Recipe {
   final Difficulty _difficulty;
   final List<TAGS> _tags;
 
-  Recipe(this._id, this._title, this._image, this._ingredients, this._instructions, this._duration, this._rating, this._difficulty, this._tags, this._authorID);
+  Recipe(this._id, this._title, this._image, this._ingredients, this._instructions, this._duration, this._rating, this._difficulty, this._tags, this._authorID){
+    // Ensure instructions are not empty
+    if (_instructions.isEmpty) {
+      throw ArgumentError('Instructions cannot be empty.');
+    }}
 
   String getID() => _id;
   String getTitle() => _title;
@@ -27,12 +31,14 @@ class Recipe {
   String getImageDesc() => _image.getDesc();
   List<Ingredient> getIngredients() => _ingredients;
   List<Instruction> getInstructions() => _instructions;
-  String getPrepTime() => _duration.getPrepTime();
-  String getCookTime() => _duration.getCookingTime();
-  String getTotalTime() => _duration.getTotalTime();
+  int getPrepTime() => _duration.getPrepTime();
+  int getCookTime() => _duration.getCookingTime();
+  int getTotalTime() => _duration.getTotalTime();
+  Time getDuration() => _duration;
   double getAverageRating() => _rating.getAverageRating();
   int getReviewCount() => _rating.getReviewCount();
   String getAuthorID() => _authorID;
+  Level getDifficultyLevel() => _difficulty.getLevel(); // helper
   String getDifficulty(){
     Level l =  _difficulty.getLevel();
     switch(l){
@@ -99,25 +105,21 @@ class Recipe {
   }
   bool MatchesFilter(Filter filter) {
     if ((filter.title != null && filter.title != "") && !_title.contains(filter.title.toString())) {
-      print("Doesn't match title");
       return false; // If the title doesn't match
     }
     if(filter.difficulty?.getLevel() != Level.None) {
       if (filter.difficulty != null &&
           _difficulty.getLevel() != filter.difficulty!.getLevel()) {
-        print("Doesn't match difficulty");
         return false; // If the difficulty doesn't match
       }
     }
     if (filter.duration != null &&
-        int.parse(_duration.getTotalTime()) >
-        int.parse(filter.duration!.getTotalTime())) {
-      print("Doesn't match duration");
+        _duration.getTotalTime() >
+        filter.duration!.getTotalTime()) {
       return false; // If the duration doesn't match
     }
     if (filter.rating != null &&
         _rating.getAverageRating() < filter.rating!.getAverageRating()) {
-      print("Doesn't match rating");
       return false; // If the rating is less than
     }
 
@@ -148,7 +150,7 @@ Recipe? createRecipe({required String recipeTitle, required String recipeThumbna
     for(var kv in recipeInstructions.entries){
       instructions.add(Instruction(kv.key, kv.value));
     }
-    Time duration = Time(recipePrepTime, recipeCookTime);
+    Time duration = Time(int.parse(recipePrepTime), int.parse(recipeCookTime));
     Rating rating = Rating(0, 0);
     Difficulty difficulty = Difficulty(level: recipeDifficulty);
     List<TAGS> tags = [];
@@ -365,57 +367,49 @@ Future<List<Recipe>> getAllRecipesWithFilter(Filter filter) async {
   return filteredRecipes;
 }
 
-
-Future<bool> bookmarkRecipe(String recipeID) async {
+Future<bool> bookmarkRecipe({
+  required String recipeID,
+  required FirebaseFirestore firestore,
+  required FirebaseAuth auth,
+}) async {
   try {
-    CollectionReference userCalendar = FirebaseFirestore.instance.collection('userBookmarks');
+    final String? userID = auth.currentUser?.uid;
+    if (userID == null) return false;
 
-    DocumentReference userDoc = userCalendar.doc(FirebaseAuth.instance.currentUser?.uid);
+    final userDoc = firestore.collection('userBookmarks').doc(userID);
+    final userSnapshot = await userDoc.get();
 
-    DocumentSnapshot userData = await userDoc.get();
+    List<dynamic> bookmarks = [];
 
-    if (userData.exists) {
-      Map<String, dynamic> data = userData.data() as Map<String, dynamic>;
-      List<dynamic> bookmarks = data['bookmarks'] ?? [];
+    if (userSnapshot.exists) {
+      bookmarks = userSnapshot.data()?['bookmarks'] ?? [];
 
-      // Check if the recipe is already bookmarked and if so unbookmark it
-      bool flag = false;
-      for (var bookmark in bookmarks) {
-        if (bookmark['recipeID'] == recipeID) {
-          bookmarks.remove(bookmark);
-          print("Un-Bookmarked recipe successfully!");
-          flag = true;
-        }
+      final index = bookmarks.indexWhere((b) => b['recipeID'] == recipeID);
+      if (index != -1) {
+        bookmarks.removeAt(index);
+        print('Unbookmarked recipe.');
+      } else {
+        bookmarks.add({'recipeID': recipeID});
+        print('Bookmarked recipe.');
       }
 
-      if(!flag){
-        bookmarks.add({
-          'recipeID': recipeID,
-        });
-        print("Bookmarked recipe successfully!");
-      }
-
-      // Update the 'bookmarks' field with the updated list
-      await userDoc.update({
-        'bookmarks': bookmarks,
-      });
+      await userDoc.update({'bookmarks': bookmarks});
     } else {
-      // If the document doesn't exist, create it with the new event
       await userDoc.set({
         'bookmarks': [
-          {
-            'recipeID': recipeID,
-          },
+          {'recipeID': recipeID}
         ],
       });
-      print("Bookmarked successfully!");
-      return true;
+      print('Bookmarked recipe (new user doc).');
     }
+
+    return true;
   } catch (e) {
-    print("Error bookmarking recipe: $e");
+    print('Error in bookmarkRecipe: $e');
+    return false;
   }
-  return false;
 }
+
 
 Future<List<String>> getUserBookmarkedRecipesIDs() async {
   List<String> returnData = [];

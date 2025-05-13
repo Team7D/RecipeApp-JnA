@@ -43,11 +43,11 @@ class _SearchPageState extends State<SearchPage> {
   Time? _parseTime(String timeFilter) {
     switch (timeFilter) {
       case '< 30 min':
-        return Time("0", "30");
+        return Time(0, 30);
       case '30-60 min':
-        return Time("30", "60");
+        return Time(30, 60);
       case '> 60 min':
-        return Time("60", "120");
+        return Time(60, 120);
       default:
         return null;
     }

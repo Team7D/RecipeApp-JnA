@@ -29,7 +29,8 @@ class RecipePage extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.bookmark_border, color: Colors.black),
             onPressed: () {
-              bookmarkRecipe(recipe.getID());
+              bookmarkRecipe(recipeID: recipe.getID(), firestore: FirebaseFirestore.instance,
+                  auth: FirebaseAuth.instance);
             },
           ),
         ],

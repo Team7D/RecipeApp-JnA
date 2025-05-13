@@ -6,8 +6,10 @@ class Ingredient {
   final String _unit;
   late final Macros? _macros;
 
-  Ingredient(this._name, this._quantity, this._unit) {
-    Init();
+  Ingredient(this._name, this._quantity, this._unit, {bool testing = false}) {
+    if(!testing) {
+      Init();
+    }
   }
 
   @override
@@ -60,7 +62,6 @@ class Ingredient {
           fiber: data['fiber'],
         );
 
-        // Do something with the macros object
         this._macros = macros;
       } else {
         print('No data found for the given ingredient name: $_name');

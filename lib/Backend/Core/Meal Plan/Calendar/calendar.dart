@@ -179,27 +179,25 @@ class Calendar {
   }
 }
 
-Future<List<Map<String, dynamic>>> getUserCalendarData(String userID) async {
+Future<List<Map<String, dynamic>>> getUserCalendarData(
+    String userID, {
+      required FirebaseFirestore firestore,
+    }) async {
   List<Map<String, dynamic>> returnData = [];
 
   try {
-    CollectionReference userCalendar = FirebaseFirestore.instance.collection('userCalendars');
+    final userDoc = await firestore.collection('userCalendars').doc(userID).get();
+    if (userDoc.exists) {
+      final data = userDoc.data() as Map<String, dynamic>;
+      final events = data['events'] as List<dynamic>;
 
-    DocumentSnapshot userData = await userCalendar.doc(userID).get();
-
-    if (userData.exists) {
-      Map<String, dynamic> data = userData.data() as Map<String, dynamic>;
-
-      List<dynamic> events = data['events'];
-
-      for (var event in events) {
+      for (final event in events) {
         returnData.add({
           'date': event['date'],
           'recipeID': event['recipeID'],
         });
       }
     }
-
   } catch (e) {
     print("Error getting calendar data: $e");
   }
@@ -207,58 +205,48 @@ Future<List<Map<String, dynamic>>> getUserCalendarData(String userID) async {
   return returnData;
 }
 
-Future<void> addOrOverwriteEventToUserCalendar(String userID, String date, String recipeID) async {
+
+Future<void> addOrOverwriteEventToUserCalendar(
+    String userID,
+    String date,
+    String recipeID, {
+      required FirebaseFirestore firestore,
+    }) async {
   try {
-    CollectionReference userCalendar = FirebaseFirestore.instance.collection('userCalendars');
-
-    DocumentReference userDoc = userCalendar.doc(userID);
-
-    DocumentSnapshot userData = await userDoc.get();
+    final userCalendar = firestore.collection('userCalendars');
+    final userDoc = userCalendar.doc(userID);
+    final userData = await userDoc.get();
 
     if (userData.exists) {
       Map<String, dynamic> data = userData.data() as Map<String, dynamic>;
       List<dynamic> events = data['events'] ?? [];
 
-      // Check if an event with the same date already exists
       bool eventUpdated = false;
       for (var event in events) {
         if (event['date'] == date) {
-          // Overwrite the event with the new recipeID for the existing date
           event['recipeID'] = recipeID;
           eventUpdated = true;
           break;
         }
       }
 
-      // If no event with the same date was found, add the new event
       if (!eventUpdated) {
-        events.add({
-          'date': date,
-          'recipeID': recipeID,
-        });
+        events.add({'date': date, 'recipeID': recipeID});
       }
 
-      // Update the 'events' field with the updated list
-      await userDoc.update({
-        'events': events,
-      });
-      print("Event added/overwritten successfully!");
+      await userDoc.update({'events': events});
     } else {
-      // If the document doesn't exist, create it with the new event
       await userDoc.set({
         'events': [
-          {
-            'date': date,
-            'recipeID': recipeID,
-          },
-        ],
+          {'date': date, 'recipeID': recipeID}
+        ]
       });
-      print("Event added successfully!");
     }
   } catch (e) {
     print("Error adding/overwriting event: $e");
   }
 }
+
 
 
 
