@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:recipe_app/Backend/Core/Recipe/ingredient.dart';
-import 'package:recipe_app/Backend/Core/Recipe/recipeTesting.dart';
 import 'Backend/Services/Firebase/firebase_options.dart';
 import 'Frontend/Pages/home_page.dart';
 import 'Frontend/Pages/login_page.dart';
