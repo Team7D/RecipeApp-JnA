@@ -1,7 +1,4 @@
 ﻿import 'package:firebase_auth/firebase_auth.dart';
-import 'package:recipe_app/Backend/Core/Recipe/ingredient.dart';
-import '../Core/Recipe/recipe.dart';
-import '../Core/Recipe/recipeTesting.dart';
 
 ///Displays a popup to the user allowing them to sign in with google.
 Future<void> loginWithGoogle() async {
@@ -12,8 +9,6 @@ Future<void> loginWithGoogle() async {
 
     await auth.signInWithPopup(googleProvider);
 
-    //TODO : Ignore this section just for testing stuff...
-    RecipeTesting rt = RecipeTesting();
     print("Getting all recipes with filter:");
 
   } catch (error) {
