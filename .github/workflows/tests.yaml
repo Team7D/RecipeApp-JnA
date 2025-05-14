@@ -21,3 +21,4 @@ jobs:
 
       - name: Run tests
         run: npm meal_plan_test, npm bookmark_recipe_test
+
