@@ -19,7 +19,5 @@ jobs:
         with:
           node-version: 16.18
 
-      - name: Install Dependencies
-        run: npm ci
       - name: Run tests
         run: npm meal_plan_test, npm bookmark_recipe_test
