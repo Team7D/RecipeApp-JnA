@@ -22,4 +22,4 @@ jobs:
       - name: Install Dependencies
         run: npm ci
       - name: Run tests
-        run: npm test
+        run: npm meal_plan_test
