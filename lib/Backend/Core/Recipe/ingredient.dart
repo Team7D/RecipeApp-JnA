@@ -27,7 +27,7 @@ class Ingredient {
   void displayMacros(){
     if(_macros == null) return;
 
-    _macros.display();
+    _macros?.display();
   }
 
   bool matches(Ingredient other){
