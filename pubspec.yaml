@@ -4,7 +4,7 @@ description: "Recipe App - Jordan & Adam"
 version: 1.0.0+1
 
 environment:
-  sdk: ">=3.1.0 <4.0.0"
+  sdk: ">=3.2.0 <4.0.0"
 
 dependencies:
   flutter:
@@ -13,7 +13,7 @@ dependencies:
   firebase_core: ">=3.12.1 <4.0.0"
   firebase_auth: ">=5.3.0 <6.0.0"
   cloud_firestore: ">=5.4.0 <6.0.0"
-  fake_cloud_firestore: ">=3.1.0 <4.0.0"
+  fake_cloud_firestore: ">=3.0.0 <3.1.0"
   google_sign_in: ">=6.2.2 <7.0.0"
   mockito: ">=5.4.0 <6.0.0"
   provider: ">=6.1.2 <7.0.0"
