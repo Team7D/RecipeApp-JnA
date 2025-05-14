@@ -122,7 +122,7 @@ class _CreateRecipePageState extends State<CreateRecipePage> {
 
     print("✅ Raw Recipe Data: $recipe");
 
-    // Convert ingredients list to quantity + unit mappings
+    // Convert ingredients list to quantity and unit mappings
     final Map<String, int> ingredientMap = {};
     final List<String> units = [];
 
