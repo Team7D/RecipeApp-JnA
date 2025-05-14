@@ -1,11 +1,8 @@
 ﻿import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
 import '../../Backend/Core/Meal Plan/Calendar/calendar.dart';
-import '../../Backend/Core/Meal Plan/meal_plan.dart';
 import '../../Backend/Core/Recipe/ingredient.dart';
-import '../../Backend/Core/Recipe/recipe.dart';
 
 List<String> shoppingList = [];
 
