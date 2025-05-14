@@ -1,3 +1,6 @@
+name: recipe_app
+description: "Recipe App - Jordan & Adam"
+
 dependencies:
   flutter:
     sdk: flutter
@@ -25,3 +28,4 @@ dev_dependencies:
 
 environment:
   sdk: ">=3.1.0 <3.2.0"
+
